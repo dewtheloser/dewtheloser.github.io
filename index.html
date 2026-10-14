@@ -1,602 +1,276 @@
+<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1"> <meta name="theme-color" content="#10110f"> <meta name="description" content="SEE THE WORLD — a visual journal of places, people, and moments."> <title>SEE THE WORLD — A Visual Journal</title>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#10110f">
-  <meta name="description" content="SEE THE WORLD — a visual journal of places, people, and moments.">
-  <title>SEE THE WORLD — A Visual Journal</title>
-
-  <style>
-    :root {
-      --bg: #10110f;
-      --surface: #191a17;
-      --text: #f3f0e8;
-      --muted: #a4a49a;
-      --accent: #d3e0ad;
-      --line: rgba(255,255,255,.14);
-    }
-
-    * { box-sizing: border-box; }
-
-    html {
-      scroll-behavior: smooth;
-      scroll-padding-top: 70px;
-    }
-
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
-      line-height: 1.6;
-    }
-
-    a { color: inherit; }
-
-    .nav {
-      padding: 22px 7%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 20px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .brand {
-      color: var(--text);
-      font-size: 13px;
-      font-weight: bold;
-      letter-spacing: 3px;
-      text-decoration: none;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 24px;
-    }
-
-    .nav-links a {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 11px;
-      letter-spacing: 1px;
-    }
-
-    .nav-links a:hover { color: var(--accent); }
-
-    .hero {
-      padding: 100px 7% 70px;
-      min-height: 75vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .eyebrow {
-      color: var(--accent);
-      font-size: 10px;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-    }
-
-    h1 {
-      font-size: clamp(45px, 10vw, 125px);
-      line-height: 1.05;
-      letter-spacing: -.075em;
-      font-weight: 500;
-      margin: 30px 0;
-    }
-
-    /* The letters are positioned individually by JavaScript. */
-    .anagram-line {
-      display: flex;
-      flex-wrap: nowrap;
-      white-space: pre;
-      min-height: 1.05em;
-    }
-
-    .letter-slot {
-      display: inline-block;
-      position: relative;
-      width: .64em;
-      height: 1.08em;
-      flex: 0 0 .64em;
-    }
-
-    .letter {
-      position: absolute;
-      left: 0;
-      top: 0;
-      display: inline-block;
-      will-change: transform;
-      white-space: pre;
-      transition:
-        transform 1.15s cubic-bezier(.2,.8,.2,1),
-        opacity .3s ease;
-    }
-
-    .letter.space { width: .45em; }
-
-    .hero-bottom {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 25px;
-      margin-top: 25px;
-    }
-
-    .hero-description {
-      max-width: 350px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .text-link {
-      display: inline-block;
-      color: var(--accent);
-      text-decoration: none;
-      border-bottom: 1px solid var(--accent);
-      padding: 8px 0;
-      font-size: 11px;
-      letter-spacing: 1px;
-    }
-
-    .hero-image {
-      display: block;
-      width: 100%;
-      height: min(58vw, 620px);
-      min-height: 270px;
-      object-fit: cover;
-      filter: saturate(.75);
-    }
-
-    .image-wrap { padding: 0 7%; }
-
-    .image-caption {
-      display: flex;
-      justify-content: space-between;
-      gap: 15px;
-      padding: 12px 0;
-      color: var(--muted);
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
-
-    section { padding: 100px 7%; }
-
-    .section-heading {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 25px;
-      margin-bottom: 38px;
-    }
-
-    h2 {
-      font-size: clamp(35px, 6vw, 70px);
-      line-height: 1.05;
-      letter-spacing: -.06em;
-      font-weight: 500;
-      margin: 10px 0;
-    }
-
-    .section-note {
-      max-width: 230px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .gallery {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 38px 22px;
-    }
-
-    .photo { margin: 0; min-width: 0; }
-    .photo:nth-child(even) { margin-top: 65px; }
-
-    .photo img {
-      display: block;
-      width: 100%;
-      aspect-ratio: 4 / 5;
-      object-fit: cover;
-      background: var(--surface);
-      filter: saturate(.78);
-      transition: filter .4s, transform .5s;
-    }
-
-    .photo:hover img {
-      filter: saturate(1);
-      transform: scale(1.01);
-    }
-
-    .photo figcaption {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      padding-top: 13px;
-      font-size: 12px;
-    }
-
-    .photo-number { color: var(--muted); }
-
-    .about { background: var(--surface); }
-
-    .about-content {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 50px;
-      align-items: start;
-    }
-
-    .about-copy {
-      max-width: 460px;
-      padding-top: 10px;
-      color: var(--muted);
-      font-size: 15px;
-    }
-
-    .contact {
-      padding-top: 110px;
-      padding-bottom: 110px;
-      text-align: center;
-    }
-
-    .contact p {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .contact .text-link { margin-top: 18px; }
-
-    footer {
-      padding: 25px 7%;
-      border-top: 1px solid var(--line);
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-      color: var(--muted);
-      font-size: 10px;
-      letter-spacing: 1px;
-    }
-
-    .footer-brand {
-      color: var(--text);
-      letter-spacing: 3px;
-    }
-
-    @media (max-width: 650px) {
-      .nav { padding: 18px 6%; }
-      .brand { font-size: 10px; letter-spacing: 2px; }
-      .nav-links { gap: 12px; }
-      .nav-links a { font-size: 9px; }
-
-      .hero { padding: 75px 6% 50px; min-height: auto; }
-      h1 { font-size: clamp(42px, 10.5vw, 68px); }
-      .letter-slot { width: .62em; flex-basis: .62em; }
-
-      .hero-bottom {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .image-wrap { padding: 0 6%; }
-      .hero-image { height: 330px; }
-      section { padding: 70px 6%; }
-
-      .section-heading {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .gallery { grid-template-columns: 1fr; gap: 30px; }
-      .photo:nth-child(even) { margin-top: 0; }
-      .photo img { aspect-ratio: 4 / 4.5; }
-      .about-content { grid-template-columns: 1fr; gap: 15px; }
-      .contact { padding: 80px 6%; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      .letter { transition: none !important; }
-    }
-  </style>
-</head>
-
-<body>
-  <header class="nav">
-    <a class="brand" href="#">SEE THE WORLD.</a>
-    <nav class="nav-links" aria-label="Main navigation">
-      <a href="#gallery">GALLERY</a>
-      <a href="#about">ABOUT</a>
-      <a href="#contact">CONTACT</a>
-    </nav>
-  </header>
-
-  <main>
-    <section class="hero">
-      <p class="eyebrow">A personal visual journal</p>
-
-      <h1 aria-label="See the world">
-        <span class="anagram-line" id="line-one"></span>
-        <span class="anagram-line" id="line-two"></span>
-      </h1>
-
-      <div class="hero-bottom">
-        <p class="hero-description">
-          Different places. Different perspectives.
-          One world, seen through my eyes.
-        </p>
-        <a class="text-link" href="#gallery">EXPLORE THE GALLERY ↘</a>
-      </div>
-    </section>
-
-    <div class="image-wrap">
-      <img
-        class="hero-image"
-        src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1800&q=85"
-        alt="Dramatic mountain landscape"
-        fetchpriority="high"
-      >
-      <div class="image-caption">
-        <span>Somewhere on Earth</span>
-        <span>01 / A new perspective</span>
-      </div>
-    </div>
-
-    <section id="gallery">
-      <div class="section-heading">
-        <div>
-          <p class="eyebrow">Collected moments</p>
-          <h2>World in frames.</h2>
-        </div>
-        <p class="section-note">
-          A collection of places and moments that deserve a second look.
-        </p>
-      </div>
-
-      <div class="gallery">
-        <figure class="photo">
-          <img src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1000&q=85"
-            alt="Sunlight over a landscape" loading="lazy">
-          <figcaption><span>Chasing the light</span><span class="photo-number">01</span></figcaption>
-        </figure>
-
-        <figure class="photo">
-          <img src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1000&q=85"
-            alt="Lake surrounded by mountains" loading="lazy">
-          <figcaption><span>Finding stillness</span><span class="photo-number">02</span></figcaption>
-        </figure>
-
-        <figure class="photo">
-          <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1000&q=85"
-            alt="Expansive natural scenery" loading="lazy">
-          <figcaption><span>Somewhere new</span><span class="photo-number">03</span></figcaption>
-        </figure>
-
-        <figure class="photo">
-          <img src="https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1000&q=85"
-            alt="Wildlife in nature" loading="lazy">
-          <figcaption><span>Wild and free</span><span class="photo-number">04</span></figcaption>
-        </figure>
-      </div>
-    </section>
-
-    <section class="about" id="about">
-      <div class="about-content">
-        <div>
-          <p class="eyebrow">The person behind the perspective</p>
-          <h2>More than<br>what meets the eye.</h2>
-        </div>
-        <div class="about-copy">
-          <p>
-            Welcome to my corner of the internet. This is a space for
-            the places I discover, the moments I notice, and the
-            stories I find along the way.
-          </p>
-          <p>
-            The world changes depending on how you look at it.
-            These are fragments of my perspective, collected
-            one moment at a time.
-          </p>
-          <p>This is SEE THE WORLD.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="contact" id="contact">
-      <p class="eyebrow">Until the next adventure</p>
-      <h2>Let's see where<br>the world takes us.</h2>
-      <p>Have a story, a thought, or a place worth discovering?</p>
-      <a class="text-link" href="mailto:YOUR-EMAIL@example.com">GET IN TOUCH ↗</a>
-    </section>
-  </main>
-
-  <footer>
-    <span class="footer-brand">SEE THE WORLD.</span>
-    <span>A PERSONAL VISUAL JOURNAL · © 2026</span>
-  </footer>
-
-  <script>
-    /*
-      Exact anagram:
-      DEW THE LOSER
-      SEE THE WORLD
-
-      Each original letter gets matched to one unused
-      matching letter in the destination phrase. This
-      handles repeated letters correctly.
-    */
-
-    const source = "DEW THE LOSER";
-    const target = "SEE THE WORLD";
-
-    const lineOne = document.getElementById("line-one");
-    const lineTwo = document.getElementById("line-two");
-
-    const reduceMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-
-    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-
-    function createLetter(char, index) {
-      const slot = document.createElement("span");
-      slot.className = "letter-slot";
-
-      const letter = document.createElement("span");
-      letter.className = "letter";
-      letter.textContent = char === " " ? "\u00A0" : char;
-      letter.dataset.char = char;
-      letter.dataset.index = index;
-
-      if (char === " ") letter.classList.add("space");
-
-      slot.appendChild(letter);
-      return { slot, letter, char, index };
-    }
-
-    function makeSlots(text, container, offset) {
-      container.textContent = "";
-      return [...text].map((char, i) => {
-        const item = createLetter(char, offset + i);
-        container.appendChild(item.slot);
-        return item;
-      });
-    }
-
-    function getLetterItems() {
-      return [
-        ...lineOne.querySelectorAll(".letter"),
-        ...lineTwo.querySelectorAll(".letter")
-      ];
-    }
-
-    function getTargetRows() {
-      return ["SEE THE", "WORLD."];
-    }
-
-    async function runAnagram() {
-      /*
-        Display the original phrase first.
-        Then animate each letter to its final position.
-      */
-
-      const originalRows = ["DEW THE", "LOSER"];
-      const targetRows = getTargetRows();
-
-      const original = [
-        ...makeSlots(originalRows[0], lineOne, 0),
-        ...makeSlots(originalRows[1], lineTwo, originalRows[0].length)
-      ];
-
-      // Measure each letter's starting screen position.
-      original.forEach(item => {
-        item.letter.style.transition = "none";
-        item.letter.style.transform = "translate(0, 0)";
-      });
-
-      if (reduceMotion) {
-        lineOne.textContent = targetRows[0];
-        lineTwo.textContent = targetRows[1];
-        return;
-      }
-
-      await sleep(1000);
-
-      const startRects = original.map(item =>
-        item.letter.getBoundingClientRect()
-      );
-
-      // Set up the final phrase using the same letters.
-      const finalSlots = [
-        ...makeSlots(targetRows[0], lineOne, 0),
-        ...makeSlots(targetRows[1], lineTwo, targetRows[0].length)
-      ];
-
-      finalSlots.forEach(item => {
-        item.letter.style.transition = "none";
-        item.letter.style.transform = "translate(0, 0)";
-      });
-
-      // Force browser layout so the final positions are measured.
-      lineOne.offsetHeight;
-
-      const targetRects = finalSlots.map(item =>
-        item.letter.getBoundingClientRect()
-      );
-
-      /*
-        Match each source letter to an unused target letter
-        with the same character. Spaces are matched too.
-      */
-      const used = new Set();
-      const moves = [];
-
-      original.forEach((item, sourceIndex) => {
-        const targetIndex = finalSlots.findIndex((candidate, i) =>
-          !used.has(i) && candidate.char === item.char
-        );
-
-        if (targetIndex === -1) return;
-        used.add(targetIndex);
-
-        const from = startRects[sourceIndex];
-        const to = targetRects[targetIndex];
-
-        moves.push({
-          source: item,
-          target: finalSlots[targetIndex],
-          dx: from.left - to.left,
-          dy: from.top - to.top
-        });
-      });
-
-      /*
-        Show source letters at their old positions over the
-        final layout, then animate them into target positions.
-      */
-      finalSlots.forEach(item => {
-        item.letter.style.opacity = "0";
-      });
-
-      moves.forEach(move => {
-        move.source.letter.style.position = "fixed";
-        move.source.letter.style.left =
-          `${startRects[move.source.index].left}px`;
-        move.source.letter.style.top =
-          `${startRects[move.source.index].top}px`;
-        move.source.letter.style.margin = "0";
-        move.source.letter.style.zIndex = "10";
-        move.source.letter.style.transition = "none";
-      });
-
-      // Keep the final text layout stable while letters travel.
-      await sleep(50);
-
-      moves.forEach(move => {
-        move.source.letter.style.transition =
-          "transform 1.25s cubic-bezier(.2,.8,.2,1), opacity .35s ease";
-
-        move.source.letter.style.transform =
-          `translate(${move.dx * -1}px, ${move.dy * -1}px)`;
-
-        move.source.letter.style.opacity = "0";
-        move.target.letter.style.opacity = "1";
-      });
-
-      await sleep(1400);
-
-      // Ensure the finished heading is clean and accessible.
-      lineOne.textContent = "SEE THE";
-      lineTwo.textContent = "WORLD.";
-    }
-
-    runAnagram();
-  </script>
-</body>
-</html>
+<style> :root { --bg: #10110f; --surface: #191a17; --text: #f3f0e8; --muted: #a4a49a; --accent: #d3e0ad; --line: rgba(255,255,255,.14); }
+
+{
+box-sizing: border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 70px; }
+
+body { margin: 0; background: var(--bg); color: var(--text); font-family: Arial, Helvetica, sans-serif; line-height: 1.6; overflow-x: hidden; }
+
+a { color: inherit; }
+
+.nav { padding: 22px 7%; display: flex; justify-content: space-between; align-items: center; gap: 20px; border-bottom: 1px solid var(--line); }
+
+.brand { color: var(--text); font-size: 13px; font-weight: bold; letter-spacing: 3px; text-decoration: none; }
+
+.nav-links { display: flex; gap: 24px; }
+
+.nav-links a { color: var(--muted); text-decoration: none; font-size: 11px; letter-spacing: 1px; transition: color .3s; }
+
+.nav-links a:hover { color: var(--accent); }
+
+.hero { padding: 100px 7% 70px; min-height: 75vh; display: flex; flex-direction: column; justify-content: center; position: relative; }
+
+.eyebrow { color: var(--accent); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; }
+
+h1 { font-size: clamp(45px, 10vw, 125px); line-height: 1.05; letter-spacing: -.075em; font-weight: 500; margin: 30px 0; position: relative; isolation: isolate; }
+
+.anagram-line { display: flex; flex-wrap: nowrap; white-space: pre; min-height: 1.05em; position: relative; }
+
+.letter-slot { display: inline-block; position: relative; width: .64em; height: 1.08em; flex: 0 0 .64em; }
+
+.letter { position: absolute; left: 0; top: 0; display: inline-block; white-space: pre; will-change: transform, opacity; transform-origin: center center; backface-visibility: hidden; }
+
+.letter.space { width: .45em; }
+
+.hero.is-animating .letter { color: var(--accent); text-shadow: 0 0 24px rgba(211,224,173,.14); }
+
+.hero-bottom { display: flex; align-items: flex-end; justify-content: space-between; gap: 25px; margin-top: 25px; }
+
+.hero-description { max-width: 350px; color: var(--muted); font-size: 14px; }
+
+.text-link { display: inline-block; color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent); padding: 8px 0; font-size: 11px; letter-spacing: 1px; transition: opacity .3s; }
+
+.text-link:hover { opacity: .7; }
+
+.hero-image { display: block; width: 100%; height: min(58vw, 620px); min-height: 270px; object-fit: cover; filter: saturate(.75); }
+
+.image-wrap { padding: 0 7%; }
+
+.image-caption { display: flex; justify-content: space-between; gap: 15px; padding: 12px 0; color: var(--muted); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; }
+
+section:not(.hero) { padding: 100px 7%; }
+
+.section-heading { display: flex; justify-content: space-between; align-items: flex-end; gap: 25px; margin-bottom: 38px; }
+
+h2 { font-size: clamp(35px, 6vw, 70px); line-height: 1.05; letter-spacing: -.06em; font-weight: 500; margin: 10px 0; }
+
+.section-note { max-width: 230px; color: var(--muted); font-size: 12px; }
+
+.gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 38px 22px; }
+
+.photo { margin: 0; min-width: 0; }
+
+.photo:nth-child(even) { margin-top: 65px; }
+
+.photo img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; background: var(--surface); filter: saturate(.78); transition: filter .4s, transform .5s; }
+
+.photo:hover img { filter: saturate(1); transform: scale(1.01); }
+
+.photo figcaption { display: flex; justify-content: space-between; gap: 12px; padding-top: 13px; font-size: 12px; }
+
+.photo-number { color: var(--muted); }
+
+.about { background: var(--surface); }
+
+.about-content { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: start; }
+
+.about-copy { max-width: 460px; padding-top: 10px; color: var(--muted); font-size: 15px; }
+
+.contact { padding-top: 110px; padding-bottom: 110px; text-align: center; }
+
+.contact p { color: var(--muted); font-size: 13px; }
+
+.contact .text-link { margin-top: 18px; }
+
+footer { padding: 25px 7%; border-top: 1px solid var(--line); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; color: var(--muted); font-size: 10px; letter-spacing: 1px; }
+
+.footer-brand { color: var(--text); letter-spacing: 3px; }
+
+@media (max-width: 650px) { .nav { padding: 18px 6%; }
+
+.brand { font-size: 10px; letter-spacing: 2px; }
+
+.nav-links { gap: 12px; }
+
+.nav-links a { font-size: 9px; }
+
+.hero { padding: 75px 6% 50px; min-height: auto; }
+
+h1 { font-size: clamp(42px, 10.5vw, 68px); }
+
+.letter-slot { width: .62em; flex-basis: .62em; }
+
+.hero-bottom { align-items: flex-start; flex-direction: column; }
+
+.image-wrap { padding: 0 6%; }
+
+.hero-image { height: 330px; }
+
+section:not(.hero) { padding: 70px 6%; }
+
+.section-heading { flex-direction: column; align-items: flex-start; }
+
+.gallery { grid-template-columns: 1fr; gap: 30px; }
+
+.photo:nth-child(even) { margin-top: 0; }
+
+.photo img { aspect-ratio: 4 / 4.5; }
+
+.about-content { grid-template-columns: 1fr; gap: 15px; }
+
+.contact { padding: 80px 6%; } }
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } } </style> </head>
+
+<body> <header class="nav"> <a class="brand" href="#">SEE THE WORLD.</a>
+
+<nav class="nav-links" aria-label="Main navigation"> <a href="#gallery">GALLERY</a> <a href="#about">ABOUT</a> <a href="#contact">CONTACT</a> </nav> </header>
+
+<main> <section class="hero" id="hero"> <p class="eyebrow">A personal visual journal</p>
+
+<h1 id="anagram" aria-label="See the world"> <span class="anagram-line" id="line-one"></span> <span class="anagram-line" id="line-two"></span> </h1>
+
+<div class="hero-bottom"> <p class="hero-description"> Different places. Different perspectives. One world, seen through my eyes. </p>
+
+<a class="text-link" href="#gallery"> EXPLORE THE GALLERY ↘ </a> </div> </section>
+
+<div class="image-wrap"> <img class="hero-image" src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1800&q=85" alt="Dramatic mountain landscape" fetchpriority="high" >
+
+<div class="image-caption"> <span>Somewhere on Earth</span> <span>01 / A new perspective</span> </div> </div>
+
+<section id="gallery"> <div class="section-heading"> <div> <p class="eyebrow">Collected moments</p> <h2>World in frames.</h2> </div>
+
+<p class="section-note"> A collection of places and moments that deserve a second look. </p> </div>
+
+<div class="gallery"> <figure class="photo"> <img src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1000&q=85" alt="Sunlight over a landscape" loading="lazy" > <figcaption> <span>Chasing the light</span> <span class="photo-number">01</span> </figcaption> </figure>
+
+<figure class="photo"> <img src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1000&q=85" alt="Lake surrounded by mountains" loading="lazy" > <figcaption> <span>Finding stillness</span> <span class="photo-number">02</span> </figcaption> </figure>
+
+<figure class="photo"> <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1000&q=85" alt="Expansive natural scenery" loading="lazy" > <figcaption> <span>Somewhere new</span> <span class="photo-number">03</span> </figcaption> </figure>
+
+<figure class="photo"> <img src="https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1000&q=85" alt="Wildlife in nature" loading="lazy" > <figcaption> <span>Wild and free</span> <span class="photo-number">04</span> </figcaption> </figure> </div> </section>
+
+<section class="about" id="about"> <div class="about-content"> <div> <p class="eyebrow">The person behind the perspective</p> <h2>More than<br>what meets the eye.</h2> </div>
+
+<div class="about-copy"> <p> Welcome to my corner of the internet. This is a space for the places I discover, the moments I notice, and the stories I find along the way. </p>
+
+<p> The world changes depending on how you look at it. These are fragments of my perspective, collected one moment at a time. </p>
+
+<p>This is SEE THE WORLD.</p> </div> </div> </section>
+
+<section class="contact" id="contact"> <p class="eyebrow">Until the next adventure</p> <h2>Let's see where<br>the world takes us.</h2> <p>Have a story, a thought, or a place worth discovering?</p> <a class="text-link" href="mailto:YOUR-EMAIL@example.com"> GET IN TOUCH ↗ </a> </section> </main>
+
+<footer> <span class="footer-brand">SEE THE WORLD.</span> <span>A PERSONAL VISUAL JOURNAL · © 2026</span> </footer>
+
+<script> /* Cinematic anagram reveal.
+
+DEW THE LOSER SEE THE WORLD
+
+The letterforms move along intersecting paths. They cross horizontally and vertically, briefly pass through one another, and settle into the final phrase. Rotation is deliberately restrained. */
+
+const source = "DEW THE LOSER"; const target = "SEE THE WORLD";
+
+const lineOne = document.getElementById("line-one"); const lineTwo = document.getElementById("line-two"); const hero = document.getElementById("hero");
+
+const reduceMotion = window.matchMedia( "(prefers-reduced-motion: reduce)" ).matches;
+
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+function createRow(text, container) { container.replaceChildren();
+
+return [...text].map(char => { const slot = document.createElement("span"); slot.className = "letter-slot";
+
+const letter = document.createElement("span"); letter.className = "letter"; letter.textContent = char === " " ? "\u00A0" : char; letter.dataset.char = char;
+
+if (char === " ") { letter.classList.add("space"); }
+
+slot.appendChild(letter); container.appendChild(slot);
+
+return { char, slot, letter }; }); }
+
+function buildPhrase(first, second) { return [ ...createRow(first, lineOne), ...createRow(second, lineTwo) ]; }
+
+function rectCenter(rect) { return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }; }
+
+function matchLetters(original, destination) { const used = new Set(); const matches = [];
+
+original.forEach((item, originalIndex) => { let bestIndex = -1; let bestDistance = Infinity;
+
+const startRect = item.letter.getBoundingClientRect(); const start = rectCenter(startRect);
+
+destination.forEach((candidate, destinationIndex) => { if (used.has(destinationIndex)) return; if (candidate.char !== item.char) return;
+
+const end = rectCenter( candidate.letter.getBoundingClientRect() );
+
+const distance = Math.hypot( end.x - start.x, end.y - start.y );
+
+if (distance < bestDistance) { bestDistance = distance; bestIndex = destinationIndex; } });
+
+if (bestIndex !== -1) { used.add(bestIndex);
+
+matches.push({ from: item, to: destination[bestIndex], originalIndex }); } });
+
+return matches; }
+
+async function runAnagram() { const originalRows = ["DEW THE", "LOSER"]; const destinationRows = ["SEE THE", "WORLD"];
+
+const original = buildPhrase( originalRows[0], originalRows[1] );
+
+// The audience gets a moment to read the original identity. if (reduceMotion) { await sleep(100); buildPhrase(destinationRows[0], destinationRows[1]); return; }
+
+await sleep(1500);
+
+/* Capture the original letter positions before laying out the destination phrase. */ const starts = new Map();
+
+original.forEach(item => { starts.set(item, item.letter.getBoundingClientRect()); });
+
+/* Lay out the destination phrase using matching letter slots. The original letters themselves will fly to these positions, rather than being replaced with new glyphs. */ const destination = buildPhrase( destinationRows[0], destinationRows[1] );
+
+// Make the destination letters invisible placeholders. destination.forEach(item => { item.letter.style.opacity = "0"; });
+
+lineOne.offsetHeight;
+
+const matches = matchLetters(original, destination);
+
+/* Put each original letter into a fixed overlay at its exact starting position. This lets the letters cross freely without their old layout affecting their paths. */ matches.forEach(({ from }) => { const rect = starts.get(from); const letter = from.letter;
+
+letter.style.position = "fixed"; letter.style.left = ${rect.left}px; letter.style.top = ${rect.top}px; letter.style.width = ${rect.width}px; letter.style.height = ${rect.height}px; letter.style.margin = "0"; letter.style.zIndex = "20"; letter.style.pointerEvents = "none"; letter.style.transition = "none"; letter.style.transform = "translate3d(0,0,0)"; letter.style.opacity = "1";
+
+document.body.appendChild(letter); });
+
+hero.classList.add("is-animating");
+
+// Force the browser to register every starting position. document.body.offsetHeight;
+
+/* Cross-path choreography: letters take slightly different curved routes instead of all sliding directly toward their destinations. A small vertical arc and subtle tilt create movement without making the letters spin wildly. */ const animations = matches.map((match, index) => { const { from, to } = match; const startRect = starts.get(from); const endRect = to.letter.getBoundingClientRect();
+
+const start = rectCenter(startRect); const end = rectCenter(endRect);
+
+const dx = end.x - start.x; const dy = end.y - start.y;
+
+/* Alternate arc directions so letters weave across each other's paths. Longer journeys get a little more travel, while the rotation remains restrained. / const direction = index % 2 === 0 ? 1 : -1; const arc = direction ( 24 + Math.min(44, Math.abs(dx) * 0.12) );
+
+const tilt = direction * (index % 3 === 0 ? 5 : 2);
+
+const keyframes = [ { transform: "translate3d(0,0,0) rotate(0deg) scale(1)", opacity: 1, offset: 0 }, { transform: translate3d(${dx * 0.48}px,${dy * 0.48 - arc}px,0) + rotate(${tilt}deg) scale(1.08), opacity: 1, offset: 0.48 }, { transform: translate3d(${dx}px,${dy}px,0) rotate(0deg) scale(1), opacity: 1, offset: 1 } ];
+
+const delay = Math.min( 260, Math.abs(index - matches.length / 2) * 15 );
+
+const animation = from.letter.animate(keyframes, { duration: 1450 + (index % 4) * 65, delay, easing: "cubic-bezier(.22,.75,.18,1)", fill: "forwards" });
+
+to.letter.style.opacity = "1";
+
+return animation.finished.catch(() => {}); });
+
+/* Let all letters finish before removing the temporary overlay and leaving the clean, readable final phrase. */ await Promise.all(animations);
+
+await sleep(100);
+
+hero.classList.remove("is-animating");
+
+buildPhrase(destinationRows[0], destinationRows[1]); }
+
+runAnagram(); </script> </body> </html>
