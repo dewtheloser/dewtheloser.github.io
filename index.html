@@ -165,13 +165,7 @@ section:not(.hero) { padding: 70px 6%; }
 
 <footer> <span class="footer-brand">SEE THE WORLD.</span> <span>A PERSONAL VISUAL JOURNAL · © 2026</span> </footer>
 
-<script> /* Cinematic anagram reveal.
-
-DEW THE LOSER SEE THE WORLD
-
-The letterforms move along intersecting paths. They cross horizontally and vertically, briefly pass through one another, and settle into the final phrase. Rotation is deliberately restrained. */
-
-const source = "DEW THE LOSER"; const target = "SEE THE WORLD";
+<script> const source = "DEW THE LOSER"; const target = "SEE THE WORLD";
 
 const lineOne = document.getElementById("line-one"); const lineTwo = document.getElementById("line-two"); const hero = document.getElementById("hero");
 
@@ -179,98 +173,68 @@ const reduceMotion = window.matchMedia( "(prefers-reduced-motion: reduce)" ).mat
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-function createRow(text, container) { container.replaceChildren();
+function buildPhrase(first, second) { function makeLine(text, container) { container.replaceChildren();
 
 return [...text].map(char => { const slot = document.createElement("span"); slot.className = "letter-slot";
 
-const letter = document.createElement("span"); letter.className = "letter"; letter.textContent = char === " " ? "\u00A0" : char; letter.dataset.char = char;
+const letter = document.createElement("span"); letter.className = "letter"; letter.textContent = char === " " ? "\u00a0" : char;
 
-if (char === " ") { letter.classList.add("space"); }
+if (char === " ") letter.classList.add("space");
 
 slot.appendChild(letter); container.appendChild(slot);
 
 return { char, slot, letter }; }); }
 
-function buildPhrase(first, second) { return [ ...createRow(first, lineOne), ...createRow(second, lineTwo) ]; }
+return [ ...makeLine(first, lineOne), ...makeLine(second, lineTwo) ]; }
 
-function rectCenter(rect) { return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }; }
+function center(rect) { return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }; }
 
-function matchLetters(original, destination) { const used = new Set(); const matches = [];
+async function runAnagram() { // Start with the original phrase. const original = buildPhrase("DEW THE", "LOSER");
 
-original.forEach((item, originalIndex) => { let bestIndex = -1; let bestDistance = Infinity;
+if (reduceMotion) { await sleep(100); buildPhrase("SEE THE", "WORLD"); return; }
 
-const startRect = item.letter.getBoundingClientRect(); const start = rectCenter(startRect);
+// Give the original phrase time to be read. await sleep(1800);
 
-destination.forEach((candidate, destinationIndex) => { if (used.has(destinationIndex)) return; if (candidate.char !== item.char) return;
+// Save the original positions of every letter. const starts = original.map(item => ({ item, rect: item.letter.getBoundingClientRect() }));
 
-const end = rectCenter( candidate.letter.getBoundingClientRect() );
+// Lay out the destination phrase. const destination = buildPhrase("SEE THE", "WORLD");
 
-const distance = Math.hypot( end.x - start.x, end.y - start.y );
-
-if (distance < bestDistance) { bestDistance = distance; bestIndex = destinationIndex; } });
-
-if (bestIndex !== -1) { used.add(bestIndex);
-
-matches.push({ from: item, to: destination[bestIndex], originalIndex }); } });
-
-return matches; }
-
-async function runAnagram() { const originalRows = ["DEW THE", "LOSER"]; const destinationRows = ["SEE THE", "WORLD"];
-
-const original = buildPhrase( originalRows[0], originalRows[1] );
-
-// The audience gets a moment to read the original identity. if (reduceMotion) { await sleep(100); buildPhrase(destinationRows[0], destinationRows[1]); return; }
-
-await sleep(1500);
-
-/* Capture the original letter positions before laying out the destination phrase. */ const starts = new Map();
-
-original.forEach(item => { starts.set(item, item.letter.getBoundingClientRect()); });
-
-/* Lay out the destination phrase using matching letter slots. The original letters themselves will fly to these positions, rather than being replaced with new glyphs. */ const destination = buildPhrase( destinationRows[0], destinationRows[1] );
-
-// Make the destination letters invisible placeholders. destination.forEach(item => { item.letter.style.opacity = "0"; });
+destination.forEach(item => { item.letter.style.opacity = "0"; });
 
 lineOne.offsetHeight;
 
-const matches = matchLetters(original, destination);
+// Match each letter to one unused matching destination letter. const used = new Set(); const moves = [];
 
-/* Put each original letter into a fixed overlay at its exact starting position. This lets the letters cross freely without their old layout affecting their paths. */ matches.forEach(({ from }) => { const rect = starts.get(from); const letter = from.letter;
+for (const start of starts) { const index = destination.findIndex((end, i) => !used.has(i) && end.char === start.item.char );
 
-letter.style.position = "fixed"; letter.style.left = ${rect.left}px; letter.style.top = ${rect.top}px; letter.style.width = ${rect.width}px; letter.style.height = ${rect.height}px; letter.style.margin = "0"; letter.style.zIndex = "20"; letter.style.pointerEvents = "none"; letter.style.transition = "none"; letter.style.transform = "translate3d(0,0,0)"; letter.style.opacity = "1";
+if (index === -1) continue;
+
+used.add(index);
+
+const end = destination[index]; const from = center(start.rect); const to = center(end.letter.getBoundingClientRect());
+
+moves.push({ from: start.item, to, start: from, dx: to.x - from.x, dy: to.y - from.y }); }
+
+// Move the original letter elements into a fixed overlay. moves.forEach(move => { const letter = move.from.letter; const rect = move.from.letter.getBoundingClientRect();
+
+letter.style.position = "fixed"; letter.style.left = rect.left + "px"; letter.style.top = rect.top + "px"; letter.style.width = rect.width + "px"; letter.style.height = rect.height + "px"; letter.style.margin = "0"; letter.style.zIndex = "100"; letter.style.pointerEvents = "none"; letter.style.transform = "translate(0, 0)"; letter.style.transition = "none";
 
 document.body.appendChild(letter); });
 
-hero.classList.add("is-animating");
+hero.classList.add("is-animating"); document.body.offsetHeight;
 
-// Force the browser to register every starting position. document.body.offsetHeight;
+// Make the original letters cross paths and reform. const animations = moves.map((move, i) => { const { dx, dy } = move;
 
-/* Cross-path choreography: letters take slightly different curved routes instead of all sliding directly toward their destinations. A small vertical arc and subtle tilt create movement without making the letters spin wildly. */ const animations = matches.map((match, index) => { const { from, to } = match; const startRect = starts.get(from); const endRect = to.letter.getBoundingClientRect();
+// Alternate the curves to create intersecting trajectories. const direction = i % 2 === 0 ? -1 : 1; const arc = direction * (30 + (i % 4) * 12); const tilt = direction * 3;
 
-const start = rectCenter(startRect); const end = rectCenter(endRect);
+move.to.letter.style.opacity = "1";
 
-const dx = end.x - start.x; const dy = end.y - start.y;
+return move.from.letter.animate( [ { transform: "translate(0, 0) rotate(0deg)", opacity: 1, offset: 0 }, { transform: translate(${dx * 0.5}px, ${dy * 0.5 + arc}px) + rotate(${tilt}deg), opacity: 1, offset: 0.5 }, { transform: translate(${dx}px, ${dy}px) rotate(0deg), opacity: 1, offset: 1 } ], { duration: 1500 + (i % 3) * 100, delay: (i % 5) * 35, easing: "cubic-bezier(.22,.75,.18,1)", fill: "forwards" } ).finished.catch(() => {}); });
 
-/* Alternate arc directions so letters weave across each other's paths. Longer journeys get a little more travel, while the rotation remains restrained. / const direction = index % 2 === 0 ? 1 : -1; const arc = direction ( 24 + Math.min(44, Math.abs(dx) * 0.12) );
+await Promise.all(animations);
 
-const tilt = direction * (index % 3 === 0 ? 5 : 2);
+// Remove the temporary moving letters and reveal the final heading. moves.forEach(move => move.from.letter.remove());
 
-const keyframes = [ { transform: "translate3d(0,0,0) rotate(0deg) scale(1)", opacity: 1, offset: 0 }, { transform: translate3d(${dx * 0.48}px,${dy * 0.48 - arc}px,0) + rotate(${tilt}deg) scale(1.08), opacity: 1, offset: 0.48 }, { transform: translate3d(${dx}px,${dy}px,0) rotate(0deg) scale(1), opacity: 1, offset: 1 } ];
-
-const delay = Math.min( 260, Math.abs(index - matches.length / 2) * 15 );
-
-const animation = from.letter.animate(keyframes, { duration: 1450 + (index % 4) * 65, delay, easing: "cubic-bezier(.22,.75,.18,1)", fill: "forwards" });
-
-to.letter.style.opacity = "1";
-
-return animation.finished.catch(() => {}); });
-
-/* Let all letters finish before removing the temporary overlay and leaving the clean, readable final phrase. */ await Promise.all(animations);
-
-await sleep(100);
-
-hero.classList.remove("is-animating");
-
-buildPhrase(destinationRows[0], destinationRows[1]); }
+hero.classList.remove("is-animating"); buildPhrase("SEE THE", "WORLD"); }
 
 runAnagram(); </script> </body> </html>
