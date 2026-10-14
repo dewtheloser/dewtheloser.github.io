@@ -1,0 +1,298 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="The World I See — photography, travel, and life through my eyes.">
+  <title>The World I See | Photography & Travel</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f7f6f2;
+      color: #252820;
+      line-height: 1.6;
+    }
+
+    header {
+      padding: 22px 8%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      background: #f7f6f2;
+    }
+
+    .logo {
+      font-size: 19px;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    nav a {
+      color: #252820;
+      text-decoration: none;
+      margin-left: 22px;
+      font-size: 14px;
+    }
+
+    nav a:hover {
+      opacity: 0.6;
+    }
+
+    .hero {
+      padding: 85px 8% 65px;
+      background: #e5e8df;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: clamp(43px, 8vw, 86px);
+      line-height: 1.05;
+      letter-spacing: -3px;
+      max-width: 850px;
+      margin: 22px 0;
+    }
+
+    .intro {
+      max-width: 520px;
+      color: #55594f;
+      font-size: 17px;
+    }
+
+    .hero img {
+      width: 100%;
+      height: 430px;
+      object-fit: cover;
+      display: block;
+      margin-top: 35px;
+    }
+
+    section {
+      padding: 75px 8%;
+    }
+
+    h2 {
+      font-size: 34px;
+      letter-spacing: -1px;
+      margin: 0 0 12px;
+    }
+
+    .section-intro {
+      color: #66685f;
+      margin-bottom: 30px;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .photo {
+      margin: 0;
+      background: white;
+      overflow: hidden;
+    }
+
+    .photo img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .photo:hover img {
+      transform: scale(1.04);
+    }
+
+    .photo figcaption {
+      padding: 15px;
+      font-size: 14px;
+    }
+
+    #about {
+      background: #e5e8df;
+    }
+
+    #about p {
+      max-width: 650px;
+      color: #4e534a;
+    }
+
+    .contact-link {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 13px 23px;
+      background: #252820;
+      color: white;
+      text-decoration: none;
+      border-radius: 3px;
+    }
+
+    footer {
+      padding: 28px 8%;
+      background: #252820;
+      color: white;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    @media (max-width: 650px) {
+      header {
+        padding: 20px 6%;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      nav a {
+        margin: 0 15px 0 0;
+      }
+
+      .hero {
+        padding: 60px 6% 40px;
+      }
+
+      h1 {
+        letter-spacing: -2px;
+      }
+
+      .hero img {
+        height: 270px;
+      }
+
+      section {
+        padding: 50px 6%;
+      }
+
+      .gallery {
+        grid-template-columns: 1fr;
+        gap: 22px;
+      }
+
+      .photo img {
+        aspect-ratio: 4 / 3;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="logo">THE WORLD I SEE.</div>
+
+    <nav aria-label="Main navigation">
+      <a href="#work">My Gallery</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <p class="eyebrow">Photography · Travel · Life</p>
+
+      <h1>See the world through my eyes.</h1>
+
+      <p class="intro">
+        A collection of places, people, and little moments
+        that make this world extraordinary.
+      </p>
+
+      <img
+        src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1600&q=85"
+        alt="Majestic mountains beneath a dramatic sky"
+      >
+    </div>
+
+    <section id="work">
+      <p class="eyebrow">A visual journal</p>
+      <h2>Moments worth remembering.</h2>
+
+      <p class="section-intro">
+        A few glimpses of the beauty waiting to be discovered.
+      </p>
+
+      <div class="gallery">
+        <figure class="photo">
+          <img
+            src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=900&q=80"
+            alt="Golden sunrise over a peaceful landscape"
+            loading="lazy"
+          >
+          <figcaption>01 — Chasing the light</figcaption>
+        </figure>
+
+        <figure class="photo">
+          <img
+            src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=900&q=80"
+            alt="A quiet lake surrounded by mountains"
+            loading="lazy"
+          >
+          <figcaption>02 — Finding stillness</figcaption>
+        </figure>
+
+        <figure class="photo">
+          <img
+            src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80"
+            alt="Beautiful natural scenery on a journey"
+            loading="lazy"
+          >
+          <figcaption>03 — Somewhere new</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="about">
+      <p class="eyebrow">The person behind the lens</p>
+      <h2>A little about me.</h2>
+
+      <p>
+        Welcome to my corner of the internet. I created this space
+        to share the places I discover, the things I notice, and
+        the moments I want to remember. For me, the world is full
+        of stories, and every photograph captures a little piece
+        of one.
+      </p>
+    </section>
+
+    <section id="contact">
+      <p class="eyebrow">Let's connect</p>
+      <h2>Have a story to share?</h2>
+
+      <p class="section-intro">
+        I'd love to hear from you.
+      </p>
+
+      <a class="contact-link" href="mailto:YOUR-EMAIL@example.com">
+        Get in touch ↗
+      </a>
+    </section>
+  </main>
+
+  <footer>
+    <span>THE WORLD I SEE.</span>
+    <span>© 2026 · Made with curiosity.</span>
+  </footer>
+</body>
+</html>
