@@ -3,11 +3,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#10110f">
-  <meta name="description" content="SEE THE WORLD — a personal visual journal of places, people, and moments.">
-
+  <meta name="description" content="SEE THE WORLD — a visual journal of places, people, and moments.">
   <title>SEE THE WORLD — A Visual Journal</title>
 
   <style>
@@ -17,16 +15,14 @@
       --text: #f3f0e8;
       --muted: #a4a49a;
       --accent: #d3e0ad;
-      --line: rgba(255,255,255,0.14);
+      --line: rgba(255,255,255,.14);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     html {
       scroll-behavior: smooth;
-      scroll-padding-top: 80px;
+      scroll-padding-top: 70px;
     }
 
     body {
@@ -37,86 +33,91 @@
       line-height: 1.6;
     }
 
-    a {
-      color: inherit;
-    }
-
-    button {
-      font: inherit;
-    }
+    a { color: inherit; }
 
     .nav {
+      padding: 22px 7%;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 22px 7%;
+      gap: 20px;
       border-bottom: 1px solid var(--line);
     }
 
     .brand {
+      color: var(--text);
       font-size: 13px;
-      font-weight: 700;
+      font-weight: bold;
       letter-spacing: 3px;
+      text-decoration: none;
     }
 
     .nav-links {
       display: flex;
-      gap: 26px;
+      gap: 24px;
     }
 
     .nav-links a {
-      text-decoration: none;
-      font-size: 12px;
       color: var(--muted);
+      text-decoration: none;
+      font-size: 11px;
+      letter-spacing: 1px;
     }
 
-    .nav-links a:hover {
-      color: var(--accent);
-    }
+    .nav-links a:hover { color: var(--accent); }
 
     .hero {
-      min-height: 84vh;
-      padding: 100px 7% 65px;
+      padding: 100px 7% 70px;
+      min-height: 75vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      overflow: hidden;
     }
 
     .eyebrow {
+      color: var(--accent);
       font-size: 10px;
       letter-spacing: 4px;
       text-transform: uppercase;
-      color: var(--accent);
     }
 
     h1 {
-      font-size: clamp(52px, 11vw, 140px);
-      line-height: 0.98;
-      letter-spacing: -0.075em;
+      font-size: clamp(45px, 10vw, 125px);
+      line-height: 1.05;
+      letter-spacing: -.075em;
       font-weight: 500;
-      max-width: 1100px;
-      margin: 28px 0;
+      margin: 30px 0;
     }
 
-    .headline-line {
-      display: block;
+    /* The letters are positioned individually by JavaScript. */
+    .anagram-line {
+      display: flex;
+      flex-wrap: nowrap;
+      white-space: pre;
+      min-height: 1.05em;
+    }
+
+    .letter-slot {
+      display: inline-block;
+      position: relative;
+      width: .64em;
+      height: 1.08em;
+      flex: 0 0 .64em;
     }
 
     .letter {
+      position: absolute;
+      left: 0;
+      top: 0;
       display: inline-block;
-      opacity: 0;
-      transform: translateY(35px) rotate(5deg);
-      animation: arrive 0.65s cubic-bezier(.2,.7,.2,1) forwards;
-      animation-delay: var(--delay);
+      will-change: transform;
+      white-space: pre;
+      transition:
+        transform 1.15s cubic-bezier(.2,.8,.2,1),
+        opacity .3s ease;
     }
 
-    @keyframes arrive {
-      to {
-        opacity: 1;
-        transform: translateY(0) rotate(0);
-      }
-    }
+    .letter.space { width: .45em; }
 
     .hero-bottom {
       display: flex;
@@ -127,29 +128,31 @@
     }
 
     .hero-description {
+      max-width: 350px;
       color: var(--muted);
       font-size: 14px;
-      max-width: 350px;
     }
 
     .text-link {
       display: inline-block;
+      color: var(--accent);
       text-decoration: none;
       border-bottom: 1px solid var(--accent);
       padding: 8px 0;
-      color: var(--accent);
-      font-size: 12px;
+      font-size: 11px;
       letter-spacing: 1px;
     }
 
     .hero-image {
+      display: block;
       width: 100%;
       height: min(58vw, 620px);
       min-height: 270px;
       object-fit: cover;
-      display: block;
-      filter: saturate(0.75);
+      filter: saturate(.75);
     }
+
+    .image-wrap { padding: 0 7%; }
 
     .image-caption {
       display: flex;
@@ -162,9 +165,7 @@
       text-transform: uppercase;
     }
 
-    section {
-      padding: 105px 7%;
-    }
+    section { padding: 100px 7%; }
 
     .section-heading {
       display: flex;
@@ -174,20 +175,18 @@
       margin-bottom: 38px;
     }
 
-    .section-heading h2,
-    .about h2,
-    .contact h2 {
+    h2 {
       font-size: clamp(35px, 6vw, 70px);
       line-height: 1.05;
-      letter-spacing: -0.06em;
+      letter-spacing: -.06em;
       font-weight: 500;
       margin: 10px 0;
     }
 
     .section-note {
-      font-size: 12px;
+      max-width: 230px;
       color: var(--muted);
-      max-width: 220px;
+      font-size: 12px;
     }
 
     .gallery {
@@ -196,23 +195,17 @@
       gap: 38px 22px;
     }
 
-    .photo {
-      margin: 0;
-      min-width: 0;
-    }
-
-    .photo:nth-child(even) {
-      margin-top: 65px;
-    }
+    .photo { margin: 0; min-width: 0; }
+    .photo:nth-child(even) { margin-top: 65px; }
 
     .photo img {
+      display: block;
       width: 100%;
       aspect-ratio: 4 / 5;
-      display: block;
       object-fit: cover;
       background: var(--surface);
-      filter: saturate(0.78);
-      transition: filter 0.4s, transform 0.5s;
+      filter: saturate(.78);
+      transition: filter .4s, transform .5s;
     }
 
     .photo:hover img {
@@ -228,13 +221,9 @@
       font-size: 12px;
     }
 
-    .photo-number {
-      color: var(--muted);
-    }
+    .photo-number { color: var(--muted); }
 
-    .about {
-      background: var(--surface);
-    }
+    .about { background: var(--surface); }
 
     .about-content {
       display: grid;
@@ -244,21 +233,16 @@
     }
 
     .about-copy {
-      color: var(--muted);
-      font-size: 15px;
       max-width: 460px;
       padding-top: 10px;
-    }
-
-    .about-copy p {
-      margin-top: 0;
-      margin-bottom: 20px;
+      color: var(--muted);
+      font-size: 15px;
     }
 
     .contact {
+      padding-top: 110px;
+      padding-bottom: 110px;
       text-align: center;
-      padding-top: 115px;
-      padding-bottom: 115px;
     }
 
     .contact p {
@@ -266,18 +250,15 @@
       font-size: 13px;
     }
 
-    .contact .text-link {
-      margin-top: 18px;
-    }
+    .contact .text-link { margin-top: 18px; }
 
     footer {
-      border-top: 1px solid var(--line);
       padding: 25px 7%;
+      border-top: 1px solid var(--line);
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      gap: 15px;
       flex-wrap: wrap;
+      gap: 12px;
       color: var(--muted);
       font-size: 10px;
       letter-spacing: 1px;
@@ -289,101 +270,46 @@
     }
 
     @media (max-width: 650px) {
-      .nav {
-        padding: 18px 6%;
-      }
+      .nav { padding: 18px 6%; }
+      .brand { font-size: 10px; letter-spacing: 2px; }
+      .nav-links { gap: 12px; }
+      .nav-links a { font-size: 9px; }
 
-      .brand {
-        font-size: 11px;
-        letter-spacing: 2px;
-      }
-
-      .nav-links {
-        gap: 13px;
-      }
-
-      .nav-links a {
-        font-size: 10px;
-      }
-
-      .hero {
-        min-height: auto;
-        padding: 85px 6% 45px;
-      }
-
-      h1 {
-        font-size: clamp(48px, 12vw, 78px);
-        letter-spacing: -0.07em;
-      }
+      .hero { padding: 75px 6% 50px; min-height: auto; }
+      h1 { font-size: clamp(42px, 10.5vw, 68px); }
+      .letter-slot { width: .62em; flex-basis: .62em; }
 
       .hero-bottom {
         align-items: flex-start;
         flex-direction: column;
       }
 
-      .hero-image {
-        height: 340px;
-      }
-
-      section {
-        padding: 70px 6%;
-      }
+      .image-wrap { padding: 0 6%; }
+      .hero-image { height: 330px; }
+      section { padding: 70px 6%; }
 
       .section-heading {
         flex-direction: column;
         align-items: flex-start;
       }
 
-      .gallery {
-        grid-template-columns: 1fr;
-        gap: 30px;
-      }
-
-      .photo:nth-child(even) {
-        margin-top: 0;
-      }
-
-      .photo img {
-        aspect-ratio: 4 / 4.5;
-      }
-
-      .about-content {
-        grid-template-columns: 1fr;
-        gap: 15px;
-      }
-
-      .contact {
-        padding-top: 80px;
-        padding-bottom: 80px;
-      }
+      .gallery { grid-template-columns: 1fr; gap: 30px; }
+      .photo:nth-child(even) { margin-top: 0; }
+      .photo img { aspect-ratio: 4 / 4.5; }
+      .about-content { grid-template-columns: 1fr; gap: 15px; }
+      .contact { padding: 80px 6%; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      html {
-        scroll-behavior: auto;
-      }
-
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
-
-      .letter {
-        opacity: 1;
-        transform: none;
-      }
+      html { scroll-behavior: auto; }
+      .letter { transition: none !important; }
     }
   </style>
 </head>
 
 <body>
-
   <header class="nav">
-    <a class="brand" href="#" style="text-decoration:none">
-      SEE THE WORLD.
-    </a>
-
+    <a class="brand" href="#">SEE THE WORLD.</a>
     <nav class="nav-links" aria-label="Main navigation">
       <a href="#gallery">GALLERY</a>
       <a href="#about">ABOUT</a>
@@ -392,13 +318,12 @@
   </header>
 
   <main>
-
     <section class="hero">
       <p class="eyebrow">A personal visual journal</p>
 
       <h1 aria-label="See the world">
-        <span class="headline-line" id="headline-one">SEE THE</span>
-        <span class="headline-line" id="headline-two">WORLD.</span>
+        <span class="anagram-line" id="line-one"></span>
+        <span class="anagram-line" id="line-two"></span>
       </h1>
 
       <div class="hero-bottom">
@@ -406,21 +331,17 @@
           Different places. Different perspectives.
           One world, seen through my eyes.
         </p>
-
-        <a class="text-link" href="#gallery">
-          EXPLORE THE GALLERY ↘
-        </a>
+        <a class="text-link" href="#gallery">EXPLORE THE GALLERY ↘</a>
       </div>
     </section>
 
-    <div style="padding: 0 7%">
+    <div class="image-wrap">
       <img
         class="hero-image"
         src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1800&q=85"
-        alt="A dramatic mountain landscape stretching into the distance"
+        alt="Dramatic mountain landscape"
         fetchpriority="high"
       >
-
       <div class="image-caption">
         <span>Somewhere on Earth</span>
         <span>01 / A new perspective</span>
@@ -433,59 +354,34 @@
           <p class="eyebrow">Collected moments</p>
           <h2>World in frames.</h2>
         </div>
-
         <p class="section-note">
-          A little collection of places and moments that deserve a second look.
+          A collection of places and moments that deserve a second look.
         </p>
       </div>
 
       <div class="gallery">
         <figure class="photo">
-          <img
-            src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1000&q=85"
-            alt="Warm sunlight spreading across a quiet landscape"
-            loading="lazy"
-          >
-          <figcaption>
-            <span>Chasing the light</span>
-            <span class="photo-number">01</span>
-          </figcaption>
+          <img src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1000&q=85"
+            alt="Sunlight over a landscape" loading="lazy">
+          <figcaption><span>Chasing the light</span><span class="photo-number">01</span></figcaption>
         </figure>
 
         <figure class="photo">
-          <img
-            src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1000&q=85"
-            alt="Still lake surrounded by mountains"
-            loading="lazy"
-          >
-          <figcaption>
-            <span>Finding stillness</span>
-            <span class="photo-number">02</span>
-          </figcaption>
+          <img src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1000&q=85"
+            alt="Lake surrounded by mountains" loading="lazy">
+          <figcaption><span>Finding stillness</span><span class="photo-number">02</span></figcaption>
         </figure>
 
         <figure class="photo">
-          <img
-            src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1000&q=85"
-            alt="An expansive natural landscape"
-            loading="lazy"
-          >
-          <figcaption>
-            <span>Somewhere new</span>
-            <span class="photo-number">03</span>
-          </figcaption>
+          <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1000&q=85"
+            alt="Expansive natural scenery" loading="lazy">
+          <figcaption><span>Somewhere new</span><span class="photo-number">03</span></figcaption>
         </figure>
 
         <figure class="photo">
-          <img
-            src="https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1000&q=85"
-            alt="Wild animals in their natural surroundings"
-            loading="lazy"
-          >
-          <figcaption>
-            <span>Wild and free</span>
-            <span class="photo-number">04</span>
-          </figcaption>
+          <img src="https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1000&q=85"
+            alt="Wildlife in nature" loading="lazy">
+          <figcaption><span>Wild and free</span><span class="photo-number">04</span></figcaption>
         </figure>
       </div>
     </section>
@@ -496,24 +392,18 @@
           <p class="eyebrow">The person behind the perspective</p>
           <h2>More than<br>what meets the eye.</h2>
         </div>
-
         <div class="about-copy">
           <p>
-            Welcome to my little corner of the internet.
-            This is a space for the places I discover,
-            the moments I notice, and the stories I find
-            along the way.
+            Welcome to my corner of the internet. This is a space for
+            the places I discover, the moments I notice, and the
+            stories I find along the way.
           </p>
-
           <p>
-            I believe the world changes depending on how
-            you look at it. These are fragments of my
-            perspective, collected one moment at a time.
+            The world changes depending on how you look at it.
+            These are fragments of my perspective, collected
+            one moment at a time.
           </p>
-
-          <p>
-            This is SEE THE WORLD.
-          </p>
+          <p>This is SEE THE WORLD.</p>
         </div>
       </div>
     </section>
@@ -521,17 +411,9 @@
     <section class="contact" id="contact">
       <p class="eyebrow">Until the next adventure</p>
       <h2>Let's see where<br>the world takes us.</h2>
-
-      <p>
-        Have a thought, a story, or a place worth discovering?
-      </p>
-
-      <!-- Replace the email address below with your own. -->
-      <a class="text-link" href="mailto:YOUR-EMAIL@example.com">
-        GET IN TOUCH ↗
-      </a>
+      <p>Have a story, a thought, or a place worth discovering?</p>
+      <a class="text-link" href="mailto:YOUR-EMAIL@example.com">GET IN TOUCH ↗</a>
     </section>
-
   </main>
 
   <footer>
@@ -540,33 +422,181 @@
   </footer>
 
   <script>
-    // Reveal each letter with a subtle entrance animation.
-    // The words are an anagram:
-    // DEW THE LOSER = SEE THE WORLD
+    /*
+      Exact anagram:
+      DEW THE LOSER
+      SEE THE WORLD
 
-    const reducedMotion = window.matchMedia(
+      Each original letter gets matched to one unused
+      matching letter in the destination phrase. This
+      handles repeated letters correctly.
+    */
+
+    const source = "DEW THE LOSER";
+    const target = "SEE THE WORLD";
+
+    const lineOne = document.getElementById("line-one");
+    const lineTwo = document.getElementById("line-two");
+
+    const reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
-    function animateLetters(element) {
-      const text = element.textContent;
-      element.textContent = "";
+    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-      [...text].forEach((character, index) => {
-        const span = document.createElement("span");
-        span.className = "letter";
-        span.textContent = character === " " ? "\u00A0" : character;
-        span.style.setProperty(
-          "--delay",
-          reducedMotion ? "0s" : `${0.35 + index * 0.065}s`
-        );
-        element.appendChild(span);
+    function createLetter(char, index) {
+      const slot = document.createElement("span");
+      slot.className = "letter-slot";
+
+      const letter = document.createElement("span");
+      letter.className = "letter";
+      letter.textContent = char === " " ? "\u00A0" : char;
+      letter.dataset.char = char;
+      letter.dataset.index = index;
+
+      if (char === " ") letter.classList.add("space");
+
+      slot.appendChild(letter);
+      return { slot, letter, char, index };
+    }
+
+    function makeSlots(text, container, offset) {
+      container.textContent = "";
+      return [...text].map((char, i) => {
+        const item = createLetter(char, offset + i);
+        container.appendChild(item.slot);
+        return item;
       });
     }
 
-    animateLetters(document.getElementById("headline-one"));
-    animateLetters(document.getElementById("headline-two"));
-  </script>
+    function getLetterItems() {
+      return [
+        ...lineOne.querySelectorAll(".letter"),
+        ...lineTwo.querySelectorAll(".letter")
+      ];
+    }
 
+    function getTargetRows() {
+      return ["SEE THE", "WORLD."];
+    }
+
+    async function runAnagram() {
+      /*
+        Display the original phrase first.
+        Then animate each letter to its final position.
+      */
+
+      const originalRows = ["DEW THE", "LOSER"];
+      const targetRows = getTargetRows();
+
+      const original = [
+        ...makeSlots(originalRows[0], lineOne, 0),
+        ...makeSlots(originalRows[1], lineTwo, originalRows[0].length)
+      ];
+
+      // Measure each letter's starting screen position.
+      original.forEach(item => {
+        item.letter.style.transition = "none";
+        item.letter.style.transform = "translate(0, 0)";
+      });
+
+      if (reduceMotion) {
+        lineOne.textContent = targetRows[0];
+        lineTwo.textContent = targetRows[1];
+        return;
+      }
+
+      await sleep(1000);
+
+      const startRects = original.map(item =>
+        item.letter.getBoundingClientRect()
+      );
+
+      // Set up the final phrase using the same letters.
+      const finalSlots = [
+        ...makeSlots(targetRows[0], lineOne, 0),
+        ...makeSlots(targetRows[1], lineTwo, targetRows[0].length)
+      ];
+
+      finalSlots.forEach(item => {
+        item.letter.style.transition = "none";
+        item.letter.style.transform = "translate(0, 0)";
+      });
+
+      // Force browser layout so the final positions are measured.
+      lineOne.offsetHeight;
+
+      const targetRects = finalSlots.map(item =>
+        item.letter.getBoundingClientRect()
+      );
+
+      /*
+        Match each source letter to an unused target letter
+        with the same character. Spaces are matched too.
+      */
+      const used = new Set();
+      const moves = [];
+
+      original.forEach((item, sourceIndex) => {
+        const targetIndex = finalSlots.findIndex((candidate, i) =>
+          !used.has(i) && candidate.char === item.char
+        );
+
+        if (targetIndex === -1) return;
+        used.add(targetIndex);
+
+        const from = startRects[sourceIndex];
+        const to = targetRects[targetIndex];
+
+        moves.push({
+          source: item,
+          target: finalSlots[targetIndex],
+          dx: from.left - to.left,
+          dy: from.top - to.top
+        });
+      });
+
+      /*
+        Show source letters at their old positions over the
+        final layout, then animate them into target positions.
+      */
+      finalSlots.forEach(item => {
+        item.letter.style.opacity = "0";
+      });
+
+      moves.forEach(move => {
+        move.source.letter.style.position = "fixed";
+        move.source.letter.style.left =
+          `${startRects[move.source.index].left}px`;
+        move.source.letter.style.top =
+          `${startRects[move.source.index].top}px`;
+        move.source.letter.style.margin = "0";
+        move.source.letter.style.zIndex = "10";
+        move.source.letter.style.transition = "none";
+      });
+
+      // Keep the final text layout stable while letters travel.
+      await sleep(50);
+
+      moves.forEach(move => {
+        move.source.letter.style.transition =
+          "transform 1.25s cubic-bezier(.2,.8,.2,1), opacity .35s ease";
+
+        move.source.letter.style.transform =
+          `translate(${move.dx * -1}px, ${move.dy * -1}px)`;
+
+        move.source.letter.style.opacity = "0";
+        move.target.letter.style.opacity = "1";
+      });
+
+      await sleep(1400);
+
+      // Ensure the finished heading is clean and accessible.
+      lineOne.textContent = "SEE THE";
+      lineTwo.textContent = "WORLD.";
+    }
+
+    runAnagram();
+  </script>
 </body>
 </html>
