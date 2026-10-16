@@ -21,7 +21,9 @@
       --danger: #ffaaa0;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -36,12 +38,29 @@
       margin: 40px auto;
     }
 
-    h1 { font-size: 30px; letter-spacing: 1px; }
-    h2 { margin-top: 28px; }
+    h1 {
+      font-size: 30px;
+      letter-spacing: 1px;
+    }
 
-    p { color: var(--muted); line-height: 1.6; }
+    h2 {
+      margin-top: 28px;
+    }
 
-    input, button {
+    p {
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    label {
+      display: block;
+      margin-top: 14px;
+      font-weight: bold;
+    }
+
+    input,
+    button {
+      display: block;
       width: 100%;
       padding: 13px;
       margin: 10px 0;
@@ -55,7 +74,8 @@
       border: 1px solid var(--border);
     }
 
-    input:focus, button:focus-visible {
+    input:focus,
+    button:focus-visible {
       outline: 2px solid var(--accent);
       outline-offset: 2px;
     }
@@ -75,20 +95,21 @@
 
     .password-wrap {
       display: flex;
-      gap: 8px;
       align-items: stretch;
+      gap: 8px;
+      width: 100%;
     }
 
     .password-wrap input {
-      min-width: 0;
       flex: 1;
+      min-width: 0;
     }
 
     .password-wrap button {
-      width: 95px;
-      flex-shrink: 0;
+      flex: 0 0 88px;
+      width: 88px;
       margin: 10px 0;
-      padding: 10px;
+      padding: 10px 5px;
     }
 
     .secondary {
@@ -107,18 +128,30 @@
     }
 
     #status {
-      overflow-wrap: anywhere;
       min-height: 24px;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
     }
 
-    #status.error { color: var(--danger); }
-    #status.success { color: var(--accent); }
+    #status.error {
+      color: var(--danger);
+    }
 
-    [hidden] { display: none !important; }
+    #status.success {
+      color: var(--accent);
+    }
+
+    #status.info {
+      color: var(--muted);
+    }
 
     .hint {
       font-size: 13px;
       color: var(--muted);
+    }
+
+    [hidden] {
+      display: none !important;
     }
   </style>
 </head>
@@ -143,6 +176,7 @@
       >
 
       <label for="password">Password</label>
+
       <div class="password-wrap">
         <input
           id="password"
@@ -161,7 +195,9 @@
         >Show</button>
       </div>
 
-      <button id="loginButton" type="submit">Log in</button>
+      <button id="loginButton" type="submit">
+        Log in
+      </button>
     </form>
 
     <p class="hint">
@@ -169,7 +205,7 @@
     </p>
   </section>
 
-  <!-- ADMIN PANEL -->
+  <!-- ADMIN MANAGER -->
   <section id="manager" hidden>
     <h2>Upload a photo</h2>
 
@@ -182,7 +218,7 @@
         required
       >
 
-      <img id="preview" hidden alt="Selected image preview">
+      <img id="preview" alt="Selected image preview" hidden>
 
       <label for="caption">Photo caption</label>
       <input
@@ -218,30 +254,20 @@
 (() => {
   "use strict";
 
-  // 1. Replace these with your actual Supabase project details.
-  const SUPABASE_URL = "https://ddoidhdmbzvdnihysulj.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_El35FFjl02a87rBYo8IzMg_lNRJFDL3";
+  // ==========================================
+  // CONFIGURATION — UPDATE THESE THREE VALUES
+  // ==========================================
 
-  // Your authorized admin user's UUID from Supabase Authentication.
-  const OWNER_ID = "f34e5a07-d7ca-4464-84a7-92583b1cc449";
+  const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
+  const SUPABASE_KEY = "YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY";
+  const OWNER_ID = "YOUR_ACTUAL_SUPABASE_USER_UUID";
 
   const BUCKET = "gallery";
   const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
-  if (
-    !window.supabase ||
-    SUPABASE_URL.includes("YOUR_") ||
-    SUPABASE_KEY.includes("YOUR_")
-  ) {
-    document.querySelector("#status").textContent =
-      "Setup required: enter your Supabase URL and public key.";
-    return;
-  }
-
-  const db = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
+  // ==========================================
+  // PAGE ELEMENTS
+  // ==========================================
 
   const $ = (selector) => document.querySelector(selector);
 
@@ -259,26 +285,95 @@
 
   let busy = false;
   let previewUrl = null;
+  let authCheckVersion = 0;
 
-  function message(text, type = "") {
+  function message(text, type = "info") {
     status.textContent = text;
     status.className = type;
   }
 
-  function showPassword(visible) {
+  function showLogin() {
+    loginSection.hidden = false;
+    manager.hidden = true;
+  }
+
+  function showManager() {
+    loginSection.hidden = true;
+    manager.hidden = false;
+  }
+
+  // ==========================================
+  // CONFIGURATION CHECK
+  // ==========================================
+
+  if (!window.supabase) {
+    message(
+      "Supabase failed to load. Check your internet connection and reload.",
+      "error"
+    );
+    return;
+  }
+
+  if (
+    !SUPABASE_URL.startsWith("https://") ||
+    SUPABASE_URL.includes("YOUR_") ||
+    SUPABASE_KEY.includes("YOUR_") ||
+    SUPABASE_KEY === "" ||
+    OWNER_ID.includes("YOUR_") ||
+    OWNER_ID === ""
+  ) {
+    message(
+      "Setup required: enter your Supabase project URL, public key, and actual admin UUID in the configuration section.",
+      "error"
+    );
+    return;
+  }
+
+  const UUID_PATTERN =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+  if (!UUID_PATTERN.test(OWNER_ID)) {
+    message(
+      "Configuration error: OWNER_ID must be a valid Supabase user UUID.",
+      "error"
+    );
+    return;
+  }
+
+  const db = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+  // ==========================================
+  // SHOW / HIDE PASSWORD
+  // This works independently of authentication.
+  // ==========================================
+
+  function setPasswordVisibility(visible) {
     passwordInput.type = visible ? "text" : "password";
     togglePassword.textContent = visible ? "Hide" : "Show";
-    togglePassword.setAttribute("aria-pressed", String(visible));
+    togglePassword.setAttribute(
+      "aria-pressed",
+      visible ? "true" : "false"
+    );
   }
 
   togglePassword.addEventListener("click", () => {
-    showPassword(passwordInput.type === "password");
+    const shouldReveal = passwordInput.type === "password";
+    setPasswordVisibility(shouldReveal);
   });
 
-    const user = data.session?.user;
-    const ownerId = "f34e5a07-d7ca-4464-84a7-92583b1cc449";
+  // ==========================================
+  // AUTHORIZATION
+  // ==========================================
 
-    if (error) throw error;
+  async function getAuthorizedUser() {
+    const { data, error } = await db.auth.getUser();
+
+    if (error) {
+      throw error;
+    }
 
     const user = data.user;
 
@@ -290,33 +385,45 @@
   }
 
   async function refreshSession() {
+    const version = ++authCheckVersion;
+
     try {
       const user = await getAuthorizedUser();
 
+      // Ignore stale checks if a newer check has started.
+      if (version !== authCheckVersion) return;
+
       if (user) {
-        loginSection.hidden = true;
-        manager.hidden = false;
+        showManager();
         passwordInput.value = "";
-        showPassword(false);
+        setPasswordVisibility(false);
       } else {
-        manager.hidden = true;
-        loginSection.hidden = false;
+        showLogin();
       }
     } catch (error) {
-      manager.hidden = true;
-      loginSection.hidden = false;
-      message("Could not verify your session. Please log in again.", "error");
+      if (version !== authCheckVersion) return;
+
+      showLogin();
+      message(
+        "Unable to verify your login: " +
+        (error.message || "Unknown authentication error"),
+        "error"
+      );
     }
   }
 
-  // 2. Authenticate first, then verify the account is the admin.
+  // ==========================================
+  // LOGIN
+  // ==========================================
+
   loginForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     if (busy) return;
+
     busy = true;
     loginButton.disabled = true;
-    message("Signing in...");
+    message("Signing in...", "info");
 
     try {
       const email = $("#email").value.trim();
@@ -327,29 +434,44 @@
         password
       });
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
       const user = await getAuthorizedUser();
 
       if (!user) {
         await db.auth.signOut();
-        throw new Error("This account is not authorized as the gallery admin.");
+        throw new Error(
+          "This account is not authorized as the gallery administrator. Check OWNER_ID."
+        );
       }
 
-      loginSection.hidden = true;
-      manager.hidden = false;
+      showManager();
       passwordInput.value = "";
-      showPassword(false);
-      message("Login successful. You can now upload photos.", "success");
+      setPasswordVisibility(false);
+
+      message(
+        "Login successful. You can now upload photos.",
+        "success"
+      );
     } catch (error) {
-      message(error.message || "Login failed.", "error");
+      showLogin();
+
+      message(
+        "Login failed: " + (error.message || "Unknown error"),
+        "error"
+      );
     } finally {
       busy = false;
       loginButton.disabled = false;
     }
   });
 
-  // 3. Preview the selected image.
+  // ==========================================
+  // IMAGE PREVIEW
+  // ==========================================
+
   fileInput.addEventListener("change", () => {
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl);
@@ -357,22 +479,28 @@
     }
 
     const file = fileInput.files[0];
-    preview.hidden = !file;
+
+    preview.hidden = true;
     preview.removeAttribute("src");
 
-    if (file) {
-      previewUrl = URL.createObjectURL(file);
-      preview.src = previewUrl;
-    }
+    if (!file) return;
+
+    previewUrl = URL.createObjectURL(file);
+    preview.src = previewUrl;
+    preview.hidden = false;
   });
 
-  // 4. Verify the current user again before every upload.
+  // ==========================================
+  // UPLOAD PHOTO
+  // ==========================================
+
   uploadForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     if (busy) return;
 
     const file = fileInput.files[0];
+
     if (!file) {
       message("Please select an image.", "error");
       return;
@@ -385,12 +513,18 @@
     ];
 
     if (!allowedTypes.includes(file.type)) {
-      message("Choose a WebP, JPEG, or PNG image.", "error");
+      message(
+        "Unsupported file type. Choose a WebP, JPEG, or PNG image.",
+        "error"
+      );
       return;
     }
 
     if (file.size > MAX_FILE_SIZE) {
-      message("Please choose an image smaller than 5 MB.", "error");
+      message(
+        "Image is too large. Choose a file smaller than 5 MB.",
+        "error"
+      );
       return;
     }
 
@@ -404,27 +538,36 @@
 
     busy = true;
     publishButton.disabled = true;
-    message("Verifying admin access...");
 
     let uploadedPath = null;
 
     try {
+      message("Verifying administrator access...", "info");
+
       const user = await getAuthorizedUser();
 
-      if (!user || user.id !== "f34e5a07-d7ca-4464-84a7-92583b1cc449") {
-        throw new Error("Please log in with the authorized account.");
+      if (!user) {
+        await db.auth.signOut();
+        showLogin();
+
+        throw new Error(
+          "Your administrator session is invalid. Please log in again."
+        );
       }
 
-      const extensionByType = {
+      const extensions = {
         "image/webp": "webp",
         "image/jpeg": "jpg",
         "image/png": "png"
       };
 
-      const extension = extensionByType[file.type];
-      const path = `${user.id}/${crypto.randomUUID()}.${extension}`;
+      const extension = extensions[file.type];
 
-      message("Uploading image...");
+      // The user UUID folder matches the Storage policy.
+      const path =
+        `${user.id}/${crypto.randomUUID()}.${extension}`;
+
+      message("Uploading image...", "info");
 
       const { error: uploadError } = await db.storage
         .from(BUCKET)
@@ -434,90 +577,131 @@
           upsert: false
         });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        throw uploadError;
+      }
+
       uploadedPath = path;
 
       const { data: urlData } = db.storage
         .from(BUCKET)
         .getPublicUrl(path);
 
-      message("Saving photo details...");
+      if (!urlData || !urlData.publicUrl) {
+        throw new Error("Could not create the public image URL.");
+      }
+
+      message("Saving photo details...", "info");
 
       const { error: insertError } = await db
         .from("photos")
         .insert({
           image_url: urlData.publicUrl,
           caption,
-          location: location || null
+          location
         });
 
-      if (insertError) throw insertError;
+      if (insertError) {
+        throw insertError;
+      }
+
+      // The database record and image upload both succeeded.
+      uploadedPath = null;
 
       uploadForm.reset();
-      preview.hidden = true;
-      preview.removeAttribute("src");
 
       if (previewUrl) {
         URL.revokeObjectURL(previewUrl);
         previewUrl = null;
       }
 
+      preview.removeAttribute("src");
+      preview.hidden = true;
+
       message("Photo published successfully!", "success");
     } catch (error) {
-      // Roll back the uploaded file if saving the database row fails.
+      // Clean up the file if the database insert failed.
       if (uploadedPath) {
-        const { error: cleanupError } = await db.storage
-          .from(BUCKET)
-          .remove([uploadedPath]);
+        try {
+          const { error: cleanupError } = await db.storage
+            .from(BUCKET)
+            .remove([uploadedPath]);
 
-        if (cleanupError) {
-          console.error("Uploaded file cleanup failed:", cleanupError);
+          if (cleanupError) {
+            console.error("File cleanup failed:", cleanupError);
+          }
+        } catch (cleanupError) {
+          console.error("File cleanup failed:", cleanupError);
         }
       }
 
-      message("Upload failed: " + (error.message || "Unknown error"), "error");
+      message(
+        "Upload failed: " + (error.message || "Unknown error"),
+        "error"
+      );
     } finally {
       busy = false;
       publishButton.disabled = false;
     }
   });
 
-  // 5. Log out.
+  // ==========================================
+  // LOGOUT
+  // ==========================================
+
   $("#logoutButton").addEventListener("click", async () => {
     if (busy) return;
 
-    const { error } = await db.auth.signOut();
+    busy = true;
+    $("#logoutButton").disabled = true;
 
-    if (error) {
-      message("Logout failed: " + error.message, "error");
-      return;
+    try {
+      const { error } = await db.auth.signOut();
+
+      if (error) {
+        throw error;
+      }
+
+      loginForm.reset();
+      uploadForm.reset();
+
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+        previewUrl = null;
+      }
+
+      preview.removeAttribute("src");
+      preview.hidden = true;
+
+      setPasswordVisibility(false);
+      showLogin();
+
+      message("You have been logged out.", "success");
+    } catch (error) {
+      message(
+        "Logout failed: " + (error.message || "Unknown error"),
+        "error"
+      );
+    } finally {
+      busy = false;
+      $("#logoutButton").disabled = false;
     }
-
-    loginForm.reset();
-    uploadForm.reset();
-
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
-      previewUrl = null;
-    }
-
-    preview.hidden = true;
-    preview.removeAttribute("src");
-    showPassword(false);
-
-    manager.hidden = true;
-    loginSection.hidden = false;
-    message("You have been logged out.", "success");
   });
 
-  // 6. Restore a valid session on page load.
+  // ==========================================
+  // SESSION RESTORATION
+  // ==========================================
+
   db.auth.onAuthStateChange((event) => {
     if (event === "SIGNED_IN" || event === "SIGNED_OUT") {
-      // Avoid awaiting Supabase calls directly inside this callback.
-      setTimeout(() => refreshSession(), 0);
+      // Schedule the session check outside the auth callback.
+      setTimeout(() => {
+        refreshSession();
+      }, 0);
     }
   });
 
+  // Start with a session check.
   refreshSession();
 })();
 </script>
