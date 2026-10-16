@@ -275,8 +275,8 @@
     showPassword(passwordInput.type === "password");
   });
 
-  async function getAuthorizedUser() {
-    const { data, error } = await db.auth.getUser();
+    const user = data.session?.user;
+    const ownerId = "f34e5a07-d7ca-4464-84a7-92583b1cc449";
 
     if (error) throw error;
 
@@ -411,11 +411,8 @@
     try {
       const user = await getAuthorizedUser();
 
-      if (!user) {
-        await db.auth.signOut();
-        manager.hidden = true;
-        loginSection.hidden = false;
-        throw new Error("Your admin session is invalid. Please log in again.");
+      if (!user || user.id !== "f34e5a07-d7ca-4464-84a7-92583b1cc449") {
+        throw new Error("Please log in with the authorized account.");
       }
 
       const extensionByType = {
