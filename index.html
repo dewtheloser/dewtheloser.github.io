@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#10110f">
   <meta name="description" content="SEE THE WORLD — a visual journal of places, people, and moments.">
-
   <title>SEE THE WORLD — A Visual Journal</title>
 
   <style>
@@ -19,9 +18,7 @@
       --line: rgba(255, 255, 255, .14);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     html {
       scroll-behavior: smooth;
@@ -37,13 +34,8 @@
       overflow-x: hidden;
     }
 
-    a {
-      color: inherit;
-    }
-
-    img {
-      max-width: 100%;
-    }
+    a { color: inherit; }
+    img { max-width: 100%; }
 
     .nav {
       padding: 22px 7%;
@@ -63,10 +55,7 @@
       white-space: nowrap;
     }
 
-    .nav-links {
-      display: flex;
-      gap: 24px;
-    }
+    .nav-links { display: flex; gap: 24px; }
 
     .nav-links a {
       color: var(--muted);
@@ -76,9 +65,7 @@
       transition: color .3s;
     }
 
-    .nav-links a:hover {
-      color: var(--accent);
-    }
+    .nav-links a:hover { color: var(--accent); }
 
     .hero {
       padding: 100px 7% 70px;
@@ -103,9 +90,7 @@
       margin: 30px 0;
     }
 
-    .anagram-line {
-      display: block;
-    }
+    .anagram-line { display: block; }
 
     .hero-bottom {
       display: flex;
@@ -132,9 +117,7 @@
       transition: opacity .3s;
     }
 
-    .text-link:hover {
-      opacity: .7;
-    }
+    .text-link:hover { opacity: .7; }
 
     .hero-image {
       display: block;
@@ -145,9 +128,7 @@
       filter: saturate(.75);
     }
 
-    .image-wrap {
-      padding: 0 7%;
-    }
+    .image-wrap { padding: 0 7%; }
 
     .image-caption {
       display: flex;
@@ -160,9 +141,7 @@
       text-transform: uppercase;
     }
 
-    section:not(.hero) {
-      padding: 100px 7%;
-    }
+    section:not(.hero) { padding: 100px 7%; }
 
     .section-heading {
       display: flex;
@@ -192,14 +171,8 @@
       gap: 38px 22px;
     }
 
-    .photo {
-      margin: 0;
-      min-width: 0;
-    }
-
-    .photo:nth-child(even) {
-      margin-top: 65px;
-    }
+    .photo { margin: 0; min-width: 0; }
+    .photo:nth-child(even) { margin-top: 65px; }
 
     .photo img {
       display: block;
@@ -224,13 +197,27 @@
       font-size: 12px;
     }
 
-    .photo-number {
-      color: var(--muted);
+    .photo-caption {
+      overflow-wrap: anywhere;
     }
 
-    .about {
-      background: var(--surface);
+    .photo-location {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      margin-top: 3px;
     }
+
+    .photo-number { color: var(--muted); }
+
+    .gallery-message {
+      grid-column: 1 / -1;
+      padding: 30px 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .about { background: var(--surface); }
 
     .about-content {
       display: grid;
@@ -252,14 +239,8 @@
       text-align: center;
     }
 
-    .contact p {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .contact .text-link {
-      margin-top: 18px;
-    }
+    .contact p { color: var(--muted); font-size: 13px; }
+    .contact .text-link { margin-top: 18px; }
 
     footer {
       padding: 25px 7%;
@@ -273,92 +254,51 @@
       letter-spacing: 1px;
     }
 
-    .footer-brand {
-      color: var(--text);
-      letter-spacing: 3px;
-    }
+    .footer-brand { color: var(--text); letter-spacing: 3px; }
 
     @media (max-width: 650px) {
-      .nav {
-        padding: 18px 6%;
-      }
-
-      .brand {
-        font-size: 10px;
-        letter-spacing: 2px;
-      }
-
-      .nav-links {
-        gap: 12px;
-      }
-
-      .nav-links a {
-        font-size: 9px;
-      }
+      .nav { padding: 18px 6%; }
+      .brand { font-size: 10px; letter-spacing: 2px; }
+      .nav-links { gap: 12px; }
+      .nav-links a { font-size: 9px; }
 
       .hero {
         padding: 75px 6% 50px;
         min-height: auto;
       }
 
-      h1 {
-        font-size: clamp(42px, 10.5vw, 68px);
-      }
+      h1 { font-size: clamp(42px, 10.5vw, 68px); }
 
       .hero-bottom {
         align-items: flex-start;
         flex-direction: column;
       }
 
-      .image-wrap {
-        padding: 0 6%;
-      }
+      .image-wrap { padding: 0 6%; }
+      .hero-image { height: 330px; }
 
-      .hero-image {
-        height: 330px;
-      }
-
-      section:not(.hero) {
-        padding: 70px 6%;
-      }
+      section:not(.hero) { padding: 70px 6%; }
 
       .section-heading {
         flex-direction: column;
         align-items: flex-start;
       }
 
-      .gallery {
-        grid-template-columns: 1fr;
-        gap: 30px;
-      }
-
-      .photo:nth-child(even) {
-        margin-top: 0;
-      }
-
-      .photo img {
-        aspect-ratio: 4 / 4.5;
-      }
+      .gallery { grid-template-columns: 1fr; gap: 30px; }
+      .photo:nth-child(even) { margin-top: 0; }
+      .photo img { aspect-ratio: 4 / 4.5; }
 
       .about-content {
         grid-template-columns: 1fr;
         gap: 15px;
       }
 
-      .contact {
-        padding: 80px 6%;
-      }
-
-      .image-caption {
-        font-size: 9px;
-        letter-spacing: 1px;
-      }
+      .contact { padding: 80px 6%; }
+      .image-caption { font-size: 9px; letter-spacing: 1px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      html {
-        scroll-behavior: auto;
-      }
+      html { scroll-behavior: auto; }
 
       *,
       *::before,
@@ -370,7 +310,6 @@
 </head>
 
 <body>
-
   <header class="nav">
     <a class="brand" href="#">SEE THE WORLD.</a>
 
@@ -382,7 +321,6 @@
   </header>
 
   <main>
-
     <section class="hero" id="hero">
       <p class="eyebrow">A personal visual journal</p>
 
@@ -429,56 +367,9 @@
         </p>
       </div>
 
-      <div class="gallery">
-
-        <figure class="photo">
-          <img
-            src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1000&q=85"
-            alt="Sunlight over a landscape"
-            loading="lazy"
-          >
-          <figcaption>
-            <span>Chasing the light</span>
-            <span class="photo-number">01</span>
-          </figcaption>
-        </figure>
-
-        <figure class="photo">
-          <img
-            src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1000&q=85"
-            alt="Lake surrounded by mountains"
-            loading="lazy"
-          >
-          <figcaption>
-            <span>Finding stillness</span>
-            <span class="photo-number">02</span>
-          </figcaption>
-        </figure>
-
-        <figure class="photo">
-          <img
-            src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1000&q=85"
-            alt="Expansive natural scenery"
-            loading="lazy"
-          >
-          <figcaption>
-            <span>Somewhere new</span>
-            <span class="photo-number">03</span>
-          </figcaption>
-        </figure>
-
-        <figure class="photo">
-          <img
-            src="https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1000&q=85"
-            alt="Wildlife in nature"
-            loading="lazy"
-          >
-          <figcaption>
-            <span>Wild and free</span>
-            <span class="photo-number">04</span>
-          </figcaption>
-        </figure>
-
+      <!-- Supabase photos are inserted here -->
+      <div class="gallery" id="galleryGrid" aria-live="polite">
+        <p class="gallery-message">Loading photographs...</p>
       </div>
     </section>
 
@@ -520,7 +411,6 @@
         GET IN TOUCH ↗
       </a>
     </section>
-
   </main>
 
   <footer>
@@ -528,5 +418,144 @@
     <span>A PERSONAL VISUAL JOURNAL · © 2026</span>
   </footer>
 
+  <!-- Supabase JavaScript client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    (() => {
+      "use strict";
+
+      // ======================================
+      // SUPABASE CONFIGURATION
+      // Use the same project as admin.html.
+      // Use ONLY the public/publishable key.
+      // ======================================
+
+      const SUPABASE_URL = "https://ddoidhdmbzvdnihysulj.supabase.co";
+      const SUPABASE_KEY = "sb_publishable_El35FFjl02a87rBYo8IzMg_lNRJFDL3";
+
+      const TABLE = "photos";
+      const PAGE_SIZE = 100;
+
+      const gallery = document.getElementById("galleryGrid");
+
+      function showMessage(text) {
+        gallery.replaceChildren();
+
+        const message = document.createElement("p");
+        message.className = "gallery-message";
+        message.textContent = text;
+
+        gallery.appendChild(message);
+      }
+
+      function makePhoto(photo, index) {
+        const figure = document.createElement("figure");
+        figure.className = "photo";
+
+        const img = document.createElement("img");
+        img.src = photo.image_url;
+        img.alt = photo.caption || "Photograph from the gallery";
+        img.loading = "lazy";
+        img.decoding = "async";
+
+        img.addEventListener("error", () => {
+          img.alt = "This photograph could not be loaded";
+          img.style.opacity = "0.35";
+        }, { once: true });
+
+        const figcaption = document.createElement("figcaption");
+
+        const details = document.createElement("div");
+        details.className = "photo-caption";
+
+        const caption = document.createElement("span");
+        caption.textContent = photo.caption || "Untitled photograph";
+        details.appendChild(caption);
+
+        if (photo.location && photo.location.trim()) {
+          const location = document.createElement("span");
+          location.className = "photo-location";
+          location.textContent = photo.location;
+          details.appendChild(location);
+        }
+
+        const number = document.createElement("span");
+        number.className = "photo-number";
+        number.textContent = String(index + 1).padStart(2, "0");
+
+        figcaption.append(details, number);
+        figure.append(img, figcaption);
+
+        return figure;
+      }
+
+      async function loadGallery() {
+        if (!window.supabase) {
+          showMessage(
+            "Supabase could not load. Check your connection and reload."
+          );
+          return;
+        }
+
+        if (
+          !SUPABASE_URL.startsWith("https://") ||
+          SUPABASE_URL.includes("YOUR_") ||
+          !SUPABASE_KEY ||
+          SUPABASE_KEY.includes("YOUR_")
+        ) {
+          showMessage(
+            "Supabase setup required: add your project URL and public key to index.html."
+          );
+          return;
+        }
+
+        const db = window.supabase.createClient(
+          SUPABASE_URL,
+          SUPABASE_KEY
+        );
+
+        try {
+          const { data, error } = await db
+            .from(TABLE)
+            .select("image_url, caption, location")
+            .limit(PAGE_SIZE);
+
+          if (error) throw error;
+
+          const photos = (data || []).filter(photo =>
+            typeof photo.image_url === "string" &&
+            /^https:\/\//i.test(photo.image_url)
+          );
+
+          gallery.replaceChildren();
+
+          if (photos.length === 0) {
+            showMessage(
+              "No photographs yet. Check back when the next adventure is published."
+            );
+            return;
+          }
+
+          const fragment = document.createDocumentFragment();
+
+          photos.forEach((photo, index) => {
+            fragment.appendChild(makePhoto(photo, index));
+          });
+
+          gallery.appendChild(fragment);
+
+        } catch (error) {
+          console.error("Supabase gallery error:", error);
+
+          showMessage(
+            "The gallery could not be loaded. Check your Supabase table permissions and configuration."
+          );
+        }
+      }
+
+      loadGallery();
+    })();
+  </script>
 </body>
 </html>
