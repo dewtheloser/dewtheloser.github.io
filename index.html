@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,7 +19,9 @@
       --line: rgba(255, 255, 255, .14);
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     html {
       scroll-behavior: smooth;
@@ -34,8 +37,13 @@
       overflow-x: hidden;
     }
 
-    a { color: inherit; }
-    img { max-width: 100%; }
+    a {
+      color: inherit;
+    }
+
+    img {
+      max-width: 100%;
+    }
 
     .nav {
       padding: 22px 7%;
@@ -68,7 +76,9 @@
       transition: color .3s;
     }
 
-    .nav-links a:hover { color: var(--accent); }
+    .nav-links a:hover {
+      color: var(--accent);
+    }
 
     .hero {
       padding: 100px 7% 70px;
@@ -93,7 +103,9 @@
       margin: 30px 0;
     }
 
-    .anagram-line { display: block; }
+    .anagram-line {
+      display: block;
+    }
 
     .hero-bottom {
       display: flex;
@@ -120,7 +132,9 @@
       transition: opacity .3s;
     }
 
-    .text-link:hover { opacity: .7; }
+    .text-link:hover {
+      opacity: .7;
+    }
 
     .hero-image {
       display: block;
@@ -131,7 +145,9 @@
       filter: saturate(.75);
     }
 
-    .image-wrap { padding: 0 7%; }
+    .image-wrap {
+      padding: 0 7%;
+    }
 
     .image-caption {
       display: flex;
@@ -144,7 +160,9 @@
       text-transform: uppercase;
     }
 
-    section:not(.hero) { padding: 100px 7%; }
+    section:not(.hero) {
+      padding: 100px 7%;
+    }
 
     .section-heading {
       display: flex;
@@ -179,7 +197,9 @@
       min-width: 0;
     }
 
-    .photo:nth-child(even) { margin-top: 65px; }
+    .photo:nth-child(even) {
+      margin-top: 65px;
+    }
 
     .photo img {
       display: block;
@@ -204,24 +224,13 @@
       font-size: 12px;
     }
 
-    .photo-caption {
-      min-width: 0;
-      overflow-wrap: anywhere;
-    }
-
-    .photo-location {
-      display: block;
-      color: var(--muted);
-      font-size: 10px;
-      margin-top: 3px;
-    }
-
     .photo-number {
       color: var(--muted);
-      flex-shrink: 0;
     }
 
-    .about { background: var(--surface); }
+    .about {
+      background: var(--surface);
+    }
 
     .about-content {
       display: grid;
@@ -248,7 +257,9 @@
       font-size: 13px;
     }
 
-    .contact .text-link { margin-top: 18px; }
+    .contact .text-link {
+      margin-top: 18px;
+    }
 
     footer {
       padding: 25px 7%;
@@ -267,40 +278,49 @@
       letter-spacing: 3px;
     }
 
-    .gallery-status {
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 25px;
-    }
-
     @media (max-width: 650px) {
-      .nav { padding: 18px 6%; }
+      .nav {
+        padding: 18px 6%;
+      }
 
       .brand {
         font-size: 10px;
         letter-spacing: 2px;
       }
 
-      .nav-links { gap: 12px; }
+      .nav-links {
+        gap: 12px;
+      }
 
-      .nav-links a { font-size: 9px; }
+      .nav-links a {
+        font-size: 9px;
+      }
 
       .hero {
         padding: 75px 6% 50px;
         min-height: auto;
       }
 
-      h1 { font-size: clamp(42px, 10.5vw, 68px); }
+      h1 {
+        font-size: clamp(42px, 10.5vw, 68px);
+      }
 
       .hero-bottom {
         align-items: flex-start;
         flex-direction: column;
       }
 
-      .image-wrap { padding: 0 6%; }
-      .hero-image { height: 330px; }
+      .image-wrap {
+        padding: 0 6%;
+      }
 
-      section:not(.hero) { padding: 70px 6%; }
+      .hero-image {
+        height: 330px;
+      }
+
+      section:not(.hero) {
+        padding: 70px 6%;
+      }
 
       .section-heading {
         flex-direction: column;
@@ -312,16 +332,22 @@
         gap: 30px;
       }
 
-      .photo:nth-child(even) { margin-top: 0; }
+      .photo:nth-child(even) {
+        margin-top: 0;
+      }
 
-      .photo img { aspect-ratio: 4 / 4.5; }
+      .photo img {
+        aspect-ratio: 4 / 4.5;
+      }
 
       .about-content {
         grid-template-columns: 1fr;
         gap: 15px;
       }
 
-      .contact { padding: 80px 6%; }
+      .contact {
+        padding: 80px 6%;
+      }
 
       .image-caption {
         font-size: 9px;
@@ -330,7 +356,9 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
+      html {
+        scroll-behavior: auto;
+      }
 
       *,
       *::before,
@@ -354,6 +382,7 @@
   </header>
 
   <main>
+
     <section class="hero" id="hero">
       <p class="eyebrow">A personal visual journal</p>
 
@@ -400,9 +429,7 @@
         </p>
       </div>
 
-      <div class="gallery" id="photo-gallery">
-
-        <!-- Original photographs remain visible if Supabase is unavailable. -->
+      <div class="gallery">
 
         <figure class="photo">
           <img
@@ -411,7 +438,7 @@
             loading="lazy"
           >
           <figcaption>
-            <span class="photo-caption">Chasing the light</span>
+            <span>Chasing the light</span>
             <span class="photo-number">01</span>
           </figcaption>
         </figure>
@@ -423,7 +450,7 @@
             loading="lazy"
           >
           <figcaption>
-            <span class="photo-caption">Finding stillness</span>
+            <span>Finding stillness</span>
             <span class="photo-number">02</span>
           </figcaption>
         </figure>
@@ -435,7 +462,7 @@
             loading="lazy"
           >
           <figcaption>
-            <span class="photo-caption">Somewhere new</span>
+            <span>Somewhere new</span>
             <span class="photo-number">03</span>
           </figcaption>
         </figure>
@@ -447,14 +474,12 @@
             loading="lazy"
           >
           <figcaption>
-            <span class="photo-caption">Wild and free</span>
+            <span>Wild and free</span>
             <span class="photo-number">04</span>
           </figcaption>
         </figure>
 
       </div>
-
-      <p class="gallery-status" id="gallery-status" role="status" aria-live="polite"></p>
     </section>
 
     <section class="about" id="about">
@@ -495,103 +520,13 @@
         GET IN TOUCH ↗
       </a>
     </section>
+
   </main>
 
   <footer>
     <span class="footer-brand">SEE THE WORLD.</span>
     <span>A PERSONAL VISUAL JOURNAL · © 2026</span>
   </footer>
-
-  <!-- Supabase public gallery integration -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <script>
-    // Replace these with your Supabase project details.
-    const SUPABASE_URL = "https://ddoidhdmbzvdnihysulj.supabase.co";
-    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_El35FFjl02a87rBYo8IzMg_lNRJFDL3";
-
-    async function loadSupabaseGallery() {
-      const status = document.getElementById("gallery-status");
-      const gallery = document.getElementById("photo-gallery");
-
-      if (
-        SUPABASE_URL === "YOUR_PROJECT_URL" ||
-        SUPABASE_PUBLISHABLE_KEY === "YOUR_PUBLISHABLE_KEY"
-      ) {
-        status.textContent = "";
-        console.info("Supabase is not configured yet.");
-        return;
-      }
-
-      try {
-        const client = window.supabase.createClient(
-          SUPABASE_URL,
-          SUPABASE_PUBLISHABLE_KEY
-        );
-
-        const { data: photos, error } = await client
-          .from("photos")
-          .select("id, image_url, caption, location, created_at")
-          .order("created_at", { ascending: true });
-
-        if (error) throw error;
-
-        // Keep the four original photographs and append uploaded ones.
-        const existingCount = gallery.querySelectorAll(".photo").length;
-
-        photos.forEach((photo, index) => {
-          if (!photo.image_url) return;
-
-          const figure = document.createElement("figure");
-          figure.className = "photo";
-
-          const img = document.createElement("img");
-          img.src = photo.image_url;
-          img.alt = photo.caption || "Gallery photograph";
-          img.loading = "lazy";
-          img.decoding = "async";
-
-          // Hide a broken remote image rather than leaving an empty tile.
-          img.addEventListener("error", () => {
-            figure.remove();
-          }, { once: true });
-
-          const caption = document.createElement("figcaption");
-
-          const captionText = document.createElement("span");
-          captionText.className = "photo-caption";
-          captionText.textContent = photo.caption || "Untitled";
-
-          if (photo.location) {
-            const location = document.createElement("span");
-            location.className = "photo-location";
-            location.textContent = photo.location;
-            captionText.appendChild(location);
-          }
-
-          const number = document.createElement("span");
-          number.className = "photo-number";
-          number.textContent = String(
-            existingCount + index + 1
-          ).padStart(2, "0");
-
-          caption.append(captionText, number);
-          figure.append(img, caption);
-          gallery.appendChild(figure);
-        });
-
-        status.textContent = "";
-
-      } catch (error) {
-        // The original four photos remain visible if the service fails.
-        console.error("Gallery loading failed:", error);
-        status.textContent =
-          "Some photographs could not be loaded. Please try again later.";
-      }
-    }
-
-    loadSupabaseGallery();
-  </script>
 
 </body>
 </html>
