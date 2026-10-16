@@ -89,7 +89,7 @@
     }
 
     const user = data.session?.user;
-    const ownerId = "3b8727a1-44b0-410e-9364-d0f8cc706e10";
+    const ownerId = "f34e5a07-d7ca-4464-84a7-92583b1cc449";
 
     // Client-side convenience only; database policies enforce security.
     const isOwner = !!user && user.id === ownerId;
@@ -164,7 +164,7 @@
       const { data: sessionData } = await db.auth.getSession();
       const user = sessionData.session?.user;
 
-      if (!user || user.id !== "YOUR-USER-UUID") {
+      if (!user || user.id !== "f34e5a07-d7ca-4464-84a7-92583b1cc449") {
         throw new Error("Please log in with the authorized account.");
       }
 
