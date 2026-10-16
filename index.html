@@ -124,6 +124,7 @@
       height: min(58vw, 620px);
       min-height: 270px;
       object-fit: cover;
+      background: var(--surface);
       filter: saturate(.75);
     }
 
@@ -354,14 +355,14 @@
 
     <div class="image-wrap">
       <img
+        id="heroImage"
         class="hero-image"
-        src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1800&q=85"
-        alt="Dramatic mountain landscape"
+        alt=""
         fetchpriority="high"
       >
 
       <div class="image-caption">
-        <span>Somewhere on Earth</span>
+        <span id="heroLocation">Somewhere on Earth</span>
         <span>01 / A new perspective</span>
       </div>
     </div>
@@ -448,6 +449,17 @@
       const TABLE = "photos";
       const PAGE_SIZE = 100;
 
+      // The row in the "photos" table used as the hero image.
+      // It is excluded from the gallery below.
+      const HERO_ID = 3;
+
+      // Shown only if the hero photo can't be loaded from the database.
+      const HERO_FALLBACK =
+        "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1800&q=85";
+
+      const heroImg = document.getElementById("heroImage");
+      const heroLocation = document.getElementById("heroLocation");
+
       const gallery = document.getElementById("galleryGrid");
 
       function showMessage(text) {
@@ -458,6 +470,21 @@
         message.textContent = text;
 
         gallery.appendChild(message);
+      }
+
+      function setHero(photo) {
+        heroImg.src = photo.image_url;
+        heroImg.alt = photo.caption || "Featured photograph";
+
+        if (photo.location && photo.location.trim()) {
+          heroLocation.textContent = photo.location;
+        }
+      }
+
+      function setHeroFallback() {
+        if (heroImg.getAttribute("src")) return;
+        heroImg.src = HERO_FALLBACK;
+        heroImg.alt = "Dramatic mountain landscape";
       }
 
       function makePhoto(photo, index) {
@@ -519,6 +546,7 @@
           showMessage(
             "Supabase could not load. Check your connection and reload."
           );
+          setHeroFallback();
           return;
         }
 
@@ -531,6 +559,7 @@
           showMessage(
             "Supabase setup required: add your project URL and public key to index.html."
           );
+          setHeroFallback();
           return;
         }
 
@@ -542,15 +571,23 @@
         try {
           const { data, error } = await db
             .from(TABLE)
-            .select("image_url, caption, location")
+            .select("id, image_url, caption, location")
+            .order("id", { ascending: true })
             .limit(PAGE_SIZE);
 
           if (error) throw error;
 
-          const photos = (data || []).filter(photo =>
+          const valid = (data || []).filter(photo =>
             typeof photo.image_url === "string" &&
             /^https:\/\//i.test(photo.image_url)
           );
+
+          // Pull the hero photo out, and keep it out of the gallery
+          const hero = valid.find(photo => String(photo.id) === String(HERO_ID));
+          const photos = valid.filter(photo => String(photo.id) !== String(HERO_ID));
+
+          if (hero) setHero(hero);
+          else setHeroFallback();
 
           gallery.replaceChildren();
 
@@ -571,6 +608,7 @@
 
         } catch (error) {
           console.error("Supabase gallery error:", error);
+          setHeroFallback();
 
           showMessage(
             "The gallery could not be loaded. Check your Supabase table permissions and configuration."
