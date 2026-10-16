@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -165,24 +164,37 @@
       font-size: 12px;
     }
 
+    /* ======================================
+       GALLERY — masonry layout using CSS columns.
+       Images keep their ORIGINAL aspect ratio
+       (portrait, landscape, square, panoramic).
+       ====================================== */
     .gallery {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 38px 22px;
+      column-count: 2;
+      column-gap: 22px;
     }
 
-    .photo { margin: 0; min-width: 0; }
-    .photo:nth-child(even) { margin-top: 65px; }
+    .photo {
+      margin: 0 0 38px;
+      min-width: 0;
+      break-inside: avoid;
+      -webkit-column-break-inside: avoid;
+    }
 
     .photo img {
       display: block;
       width: 100%;
+      height: auto;               /* natural height = natural aspect ratio */
+      /* Temporary placeholder shape while the image loads,
+         so the layout doesn't collapse or jump around. */
       aspect-ratio: 4 / 5;
-      object-fit: cover;
       background: var(--surface);
       filter: saturate(.78);
-      transition: filter .4s, transform .5s;
+      transition: filter .4s, transform .5s, opacity .4s;
     }
+
+    /* Once loaded, the image's own proportions take over */
+    .photo img.is-loaded { aspect-ratio: auto; }
 
     .photo:hover img {
       filter: saturate(1);
@@ -211,7 +223,7 @@
     .photo-number { color: var(--muted); }
 
     .gallery-message {
-      grid-column: 1 / -1;
+      column-span: all;
       padding: 30px 0;
       color: var(--muted);
       font-size: 13px;
@@ -284,9 +296,8 @@
         align-items: flex-start;
       }
 
-      .gallery { grid-template-columns: 1fr; gap: 30px; }
-      .photo:nth-child(even) { margin-top: 0; }
-      .photo img { aspect-ratio: 4 / 4.5; }
+      .gallery { column-count: 1; }
+      .photo { margin-bottom: 30px; }
 
       .about-content {
         grid-template-columns: 1fr;
@@ -454,15 +465,28 @@
         figure.className = "photo";
 
         const img = document.createElement("img");
-        img.src = photo.image_url;
         img.alt = photo.caption || "Photograph from the gallery";
         img.loading = "lazy";
         img.decoding = "async";
+
+        // Once the image loads, drop the placeholder ratio so the
+        // photo displays at its true, original proportions.
+        img.addEventListener("load", () => {
+          if (img.naturalWidth && img.naturalHeight) {
+            // Keep the exact ratio reserved, then let the browser
+            // use the intrinsic size going forward.
+            img.style.aspectRatio = `${img.naturalWidth} / ${img.naturalHeight}`;
+          }
+          img.classList.add("is-loaded");
+        }, { once: true });
 
         img.addEventListener("error", () => {
           img.alt = "This photograph could not be loaded";
           img.style.opacity = "0.35";
         }, { once: true });
+
+        // Set src AFTER listeners are attached so cached images still fire "load"
+        img.src = photo.image_url;
 
         const figcaption = document.createElement("figcaption");
 
