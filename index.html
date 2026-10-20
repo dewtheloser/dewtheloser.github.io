@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#10110f">
   <meta name="description" content="SEE THE WORLD — a visual journal of places, people, and moments.">
   <title>SEE THE WORLD — A Visual Journal</title>
+  <script>document.documentElement.classList.add("js");</script>
 
   <style>
     :root {
@@ -15,14 +16,13 @@
       --muted: #a4a49a;
       --accent: #d3e0ad;
       --line: rgba(255, 255, 255, .14);
+      --ease: cubic-bezier(.77, 0, .18, 1);
+      --ease-out: cubic-bezier(.16, 1, .3, 1);
     }
 
     * { box-sizing: border-box; }
 
-    html {
-      scroll-behavior: smooth;
-      scroll-padding-top: 70px;
-    }
+    html { scroll-behavior: smooth; scroll-padding-top: 70px; }
 
     body {
       margin: 0;
@@ -35,6 +35,18 @@
 
     a { color: inherit; }
     img { max-width: 100%; }
+
+    /* ---------- Scroll progress bar ---------- */
+    .progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px;
+      width: 100%;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      z-index: 50;
+    }
 
     .nav {
       padding: 22px 7%;
@@ -63,7 +75,6 @@
       letter-spacing: 1px;
       transition: color .3s;
     }
-
     .nav-links a:hover { color: var(--accent); }
 
     .hero {
@@ -89,7 +100,31 @@
       margin: 30px 0;
     }
 
-    .anagram-line { display: block; }
+    /* ---------- Headline reveal: each line slides up from a mask ---------- */
+    .reveal-line {
+      display: block;
+      overflow: hidden;
+      padding-bottom: .08em;
+    }
+    .reveal-line > span { display: block; }
+
+    .js .reveal-line > span {
+      transform: translateY(110%);
+      transition: transform 1.1s var(--ease-out);
+    }
+    .js .reveal-line:nth-child(2) > span { transition-delay: .15s; }
+    .js body.ready .reveal-line > span { transform: none; }
+
+    .js .hero .eyebrow,
+    .js .hero-bottom {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity .9s ease, transform .9s var(--ease-out);
+    }
+    .js .hero-bottom { transition-delay: .5s; }
+    .js .hero .eyebrow { transition-delay: .1s; }
+    .js body.ready .hero .eyebrow,
+    .js body.ready .hero-bottom { opacity: 1; transform: none; }
 
     .hero-bottom {
       display: flex;
@@ -99,11 +134,7 @@
       margin-top: 25px;
     }
 
-    .hero-description {
-      max-width: 350px;
-      color: var(--muted);
-      font-size: 14px;
-    }
+    .hero-description { max-width: 350px; color: var(--muted); font-size: 14px; }
 
     .text-link {
       display: inline-block;
@@ -115,7 +146,6 @@
       letter-spacing: 1px;
       transition: opacity .3s;
     }
-
     .text-link:hover { opacity: .7; }
 
     .hero-image {
@@ -129,6 +159,19 @@
     }
 
     .image-wrap { padding: 0 7%; }
+
+    /* Hero image: curtain wipe upward + slow zoom settle */
+    .js .hero-frame {
+      overflow: hidden;
+      clip-path: inset(100% 0 0 0);
+      transition: clip-path 1.4s var(--ease) .3s;
+    }
+    .js .hero-frame .hero-image {
+      transform: scale(1.18);
+      transition: transform 2s var(--ease-out) .3s;
+    }
+    .js .hero-frame.in { clip-path: inset(0); }
+    .js .hero-frame.in .hero-image { transform: scale(1); }
 
     .image-caption {
       display: flex;
@@ -159,21 +202,19 @@
       margin: 10px 0;
     }
 
-    .section-note {
-      max-width: 230px;
-      color: var(--muted);
-      font-size: 12px;
-    }
+    .section-note { max-width: 230px; color: var(--muted); font-size: 12px; }
 
-    /* ======================================
-       GALLERY — masonry layout using CSS columns.
-       Images keep their ORIGINAL aspect ratio
-       (portrait, landscape, square, panoramic).
-       ====================================== */
-    .gallery {
-      column-count: 2;
-      column-gap: 22px;
+    /* ---------- Generic scroll reveal ---------- */
+    .js .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity .9s ease, transform 1s var(--ease-out);
+      transition-delay: var(--d, 0s);
     }
+    .js .reveal.in { opacity: 1; transform: none; }
+
+    /* ---------- Gallery ---------- */
+    .gallery { column-count: 2; column-gap: 22px; }
 
     .photo {
       margin: 0 0 38px;
@@ -185,22 +226,24 @@
     .photo img {
       display: block;
       width: 100%;
-      height: auto;               /* natural height = natural aspect ratio */
-      /* Temporary placeholder shape while the image loads,
-         so the layout doesn't collapse or jump around. */
+      height: auto;
       aspect-ratio: 4 / 5;
       background: var(--surface);
       filter: saturate(.78);
-      transition: filter .4s, transform .5s, opacity .4s;
+      cursor: zoom-in;
+      transition: filter .4s, transform .6s var(--ease-out), clip-path 1.2s var(--ease);
     }
-
-    /* Once loaded, the image's own proportions take over */
     .photo img.is-loaded { aspect-ratio: auto; }
 
-    .photo:hover img {
-      filter: saturate(1);
-      transform: scale(1.01);
+    /* Curtain reveal for each photo as it scrolls into view */
+    .js .photo.reveal { opacity: 1; transform: none; }
+    .js .photo img {
+      clip-path: inset(0 0 100% 0);
+      transform: scale(1.12);
+      transition-delay: var(--d, 0s);
     }
+    .js .photo.in img { clip-path: inset(0); transform: scale(1); }
+    .js .photo.in:hover img { filter: saturate(1); transform: scale(1.02); transition-delay: 0s; }
 
     .photo figcaption {
       display: flex;
@@ -209,26 +252,18 @@
       padding-top: 13px;
       font-size: 12px;
     }
-
-    .photo-caption {
-      overflow-wrap: anywhere;
+    .js .photo figcaption {
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity .8s ease .5s, transform .8s var(--ease-out) .5s;
     }
+    .js .photo.in figcaption { opacity: 1; transform: none; }
 
-    .photo-location {
-      display: block;
-      color: var(--muted);
-      font-size: 10px;
-      margin-top: 3px;
-    }
-
+    .photo-caption { overflow-wrap: anywhere; }
+    .photo-location { display: block; color: var(--muted); font-size: 10px; margin-top: 3px; }
     .photo-number { color: var(--muted); }
 
-    .gallery-message {
-      column-span: all;
-      padding: 30px 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
+    .gallery-message { column-span: all; padding: 30px 0; color: var(--muted); font-size: 13px; }
 
     .about { background: var(--surface); }
 
@@ -239,19 +274,9 @@
       align-items: start;
     }
 
-    .about-copy {
-      max-width: 460px;
-      padding-top: 10px;
-      color: var(--muted);
-      font-size: 15px;
-    }
+    .about-copy { max-width: 460px; padding-top: 10px; color: var(--muted); font-size: 15px; }
 
-    .contact {
-      padding-top: 110px;
-      padding-bottom: 110px;
-      text-align: center;
-    }
-
+    .contact { padding-top: 110px; padding-bottom: 110px; text-align: center; }
     .contact p { color: var(--muted); font-size: 13px; }
     .contact .text-link { margin-top: 18px; }
 
@@ -266,8 +291,49 @@
       font-size: 10px;
       letter-spacing: 1px;
     }
-
     .footer-brand { color: var(--text); letter-spacing: 3px; }
+
+    /* ---------- Lightbox ---------- */
+    .lightbox {
+      border: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      max-height: none;
+      background: rgba(10, 11, 9, .96);
+      color: var(--text);
+    }
+    .lightbox::backdrop { background: rgba(10, 11, 9, .96); }
+    .lightbox[open] { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; animation: lbIn .4s ease; }
+    @keyframes lbIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 78vh;
+      object-fit: contain;
+      animation: lbImg .6s var(--ease-out);
+    }
+    @keyframes lbImg { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: none; } }
+
+    .lb-info { text-align: center; font-size: 12px; max-width: 80vw; }
+    .lb-info small { display: block; color: var(--muted); font-size: 10px; margin-top: 3px; letter-spacing: 1px; }
+
+    .lb-btn {
+      position: absolute;
+      background: none;
+      border: 1px solid var(--line);
+      color: var(--text);
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      font-size: 16px;
+      cursor: pointer;
+      transition: border-color .3s, color .3s;
+    }
+    .lb-btn:hover, .lb-btn:focus-visible { border-color: var(--accent); color: var(--accent); outline: none; }
+    .lb-close { top: 20px; right: 20px; }
+    .lb-prev { left: 20px; top: 50%; }
+    .lb-next { right: 20px; top: 50%; }
 
     @media (max-width: 650px) {
       .nav { padding: 18px 6%; }
@@ -275,53 +341,41 @@
       .nav-links { gap: 12px; }
       .nav-links a { font-size: 9px; }
 
-      .hero {
-        padding: 75px 6% 50px;
-        min-height: auto;
-      }
-
+      .hero { padding: 75px 6% 50px; min-height: auto; }
       h1 { font-size: clamp(42px, 10.5vw, 68px); }
-
-      .hero-bottom {
-        align-items: flex-start;
-        flex-direction: column;
-      }
+      .hero-bottom { align-items: flex-start; flex-direction: column; }
 
       .image-wrap { padding: 0 6%; }
       .hero-image { height: 330px; }
 
       section:not(.hero) { padding: 70px 6%; }
-
-      .section-heading {
-        flex-direction: column;
-        align-items: flex-start;
-      }
+      .section-heading { flex-direction: column; align-items: flex-start; }
 
       .gallery { column-count: 1; }
       .photo { margin-bottom: 30px; }
 
-      .about-content {
-        grid-template-columns: 1fr;
-        gap: 15px;
-      }
-
+      .about-content { grid-template-columns: 1fr; gap: 15px; }
       .contact { padding: 80px 6%; }
       .image-caption { font-size: 9px; letter-spacing: 1px; }
+
+      .lb-prev { top: auto; bottom: 20px; left: 20px; }
+      .lb-next { top: auto; bottom: 20px; right: 20px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-
-      *,
-      *::before,
-      *::after {
+      *, *::before, *::after {
         transition-duration: .01ms !important;
+        transition-delay: 0s !important;
+        animation-duration: .01ms !important;
       }
     }
   </style>
 </head>
 
 <body>
+  <div class="progress" id="progress" aria-hidden="true"></div>
+
   <header class="nav">
     <a class="brand" href="#">PERSPECTIVE.</a>
 
@@ -336,9 +390,9 @@
     <section class="hero" id="hero">
       <p class="eyebrow">A personal visual journal</p>
 
-      <h1 id="anagram" aria-label="See the world">
-        <span class="anagram-line">SEE THE</span>
-        <span class="anagram-line">WORLD</span>
+      <h1 aria-label="See the world">
+        <span class="reveal-line" aria-hidden="true"><span>SEE THE</span></span>
+        <span class="reveal-line" aria-hidden="true"><span>WORLD</span></span>
       </h1>
 
       <div class="hero-bottom">
@@ -347,19 +401,14 @@
           One world, seen through my eyes.
         </p>
 
-        <a class="text-link" href="#gallery">
-          EXPLORE THE GALLERY ↘
-        </a>
+        <a class="text-link" href="#gallery">EXPLORE THE GALLERY ↘</a>
       </div>
     </section>
 
     <div class="image-wrap">
-      <img
-        id="heroImage"
-        class="hero-image"
-        alt=""
-        fetchpriority="high"
-      >
+      <div class="hero-frame" id="heroFrame">
+        <img id="heroImage" class="hero-image" alt="" fetchpriority="high">
+      </div>
 
       <div class="image-caption">
         <span id="heroLocation">Somewhere on Earth</span>
@@ -368,7 +417,7 @@
     </div>
 
     <section id="gallery">
-      <div class="section-heading">
+      <div class="section-heading reveal">
         <div>
           <p class="eyebrow">Collected moments</p>
           <h2>World in frames.</h2>
@@ -379,7 +428,6 @@
         </p>
       </div>
 
-      <!-- Supabase photos are inserted here -->
       <div class="gallery" id="galleryGrid" aria-live="polite">
         <p class="gallery-message">Loading photographs...</p>
       </div>
@@ -387,12 +435,12 @@
 
     <section class="about" id="about">
       <div class="about-content">
-        <div>
+        <div class="reveal">
           <p class="eyebrow">The person behind the perspective</p>
           <h2>More than<br>what meets the eye.</h2>
         </div>
 
-        <div class="about-copy">
+        <div class="about-copy reveal" style="--d:.15s">
           <p>
             Welcome to my corner of the internet. This is a space
             for the places I discover, the moments I notice, and
@@ -411,17 +459,12 @@
     </section>
 
     <section class="contact" id="contact">
-      <p class="eyebrow">Until the next adventure</p>
-
-      <h2>Let's see where<br>the world takes us.</h2>
-
-      <p>
-        Have a story, a thought, or a place worth discovering?
-      </p>
-
-      <a class="text-link" href="mailto:steventambi@protonmail.com">
-        GET IN TOUCH ↗
-      </a>
+      <div class="reveal">
+        <p class="eyebrow">Until the next adventure</p>
+        <h2>Let's see where<br>the world takes us.</h2>
+        <p>Have a story, a thought, or a place worth discovering?</p>
+        <a class="text-link" href="mailto:steventambi@protonmail.com">GET IN TOUCH ↗</a>
+      </div>
     </section>
   </main>
 
@@ -430,7 +473,15 @@
     <span>A PERSONAL VISUAL JOURNAL · © 2026</span>
   </footer>
 
-  <!-- Supabase JavaScript client -->
+  <!-- Lightbox -->
+  <dialog class="lightbox" id="lightbox" aria-label="Photo viewer">
+    <button class="lb-btn lb-close" id="lbClose" aria-label="Close">✕</button>
+    <button class="lb-btn lb-prev" id="lbPrev" aria-label="Previous photo">←</button>
+    <button class="lb-btn lb-next" id="lbNext" aria-label="Next photo">→</button>
+    <img id="lbImg" alt="">
+    <div class="lb-info" id="lbInfo"></div>
+  </dialog>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
@@ -438,44 +489,138 @@
       "use strict";
 
       // ======================================
-      // SUPABASE CONFIGURATION
-      // Use the same project as admin.html.
-      // Use ONLY the public/publishable key.
+      // SUPABASE CONFIGURATION (public key only)
       // ======================================
-
       const SUPABASE_URL = "https://ddoidhdmbzvdnihysulj.supabase.co";
       const SUPABASE_KEY = "sb_publishable_El35FFjl02a87rBYo8IzMg_lNRJFDL3";
 
       const TABLE = "photos";
       const PAGE_SIZE = 100;
-
-      // The row in the "photos" table used as the hero image.
-      // It is excluded from the gallery below.
       const HERO_ID = 4;
 
-      // Shown only if the hero photo can't be loaded from the database.
       const HERO_FALLBACK =
         "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1800&q=85";
 
       const heroImg = document.getElementById("heroImage");
+      const heroFrame = document.getElementById("heroFrame");
       const heroLocation = document.getElementById("heroLocation");
-
       const gallery = document.getElementById("galleryGrid");
 
+      // ======================================
+      // REVEAL ENGINE
+      // ======================================
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const canObserve = "IntersectionObserver" in window && !reduceMotion;
+
+      const observer = canObserve
+        ? new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("in");
+                observer.unobserve(entry.target);
+              }
+            });
+          }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" })
+        : null;
+
+      function watch(el) {
+        if (observer) observer.observe(el);
+        else el.classList.add("in");
+      }
+
+      document.querySelectorAll(".reveal").forEach(watch);
+
+      // Intro: headline lines slide up, then the hero image wipes in
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        document.body.classList.add("ready");
+      }));
+
+      let heroShown = false;
+      function showHero() {
+        if (heroShown) return;
+        heroShown = true;
+        heroFrame.classList.add("in");
+      }
+      heroImg.addEventListener("load", showHero);
+      heroImg.addEventListener("error", showHero);
+      setTimeout(showHero, 2500); // never leave the hero hidden
+
+      // Scroll progress bar
+      const progress = document.getElementById("progress");
+      let ticking = false;
+      function updateProgress() {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const p = max > 0 ? Math.min(1, window.scrollY / max) : 0;
+        progress.style.transform = `scaleX(${p})`;
+        ticking = false;
+      }
+      window.addEventListener("scroll", () => {
+        if (!ticking) { ticking = true; requestAnimationFrame(updateProgress); }
+      }, { passive: true });
+      updateProgress();
+
+      // ======================================
+      // LIGHTBOX
+      // ======================================
+      const lb = document.getElementById("lightbox");
+      const lbImg = document.getElementById("lbImg");
+      const lbInfo = document.getElementById("lbInfo");
+      let items = [];
+      let current = 0;
+
+      function showItem(i) {
+        if (!items.length) return;
+        current = (i + items.length) % items.length;
+        const item = items[current];
+
+        lbImg.style.animation = "none";
+        void lbImg.offsetWidth; // restart the animation
+        lbImg.style.animation = "";
+
+        lbImg.src = item.image_url;
+        lbImg.alt = item.caption || "Photograph";
+
+        lbInfo.replaceChildren();
+        lbInfo.append(item.caption || "Untitled photograph");
+        if (item.location && item.location.trim()) {
+          const small = document.createElement("small");
+          small.textContent = item.location;
+          lbInfo.appendChild(small);
+        }
+      }
+
+      function openLightbox(i) {
+        showItem(i);
+        if (!lb.open) lb.showModal();
+      }
+
+      document.getElementById("lbClose").addEventListener("click", () => lb.close());
+      document.getElementById("lbPrev").addEventListener("click", () => showItem(current - 1));
+      document.getElementById("lbNext").addEventListener("click", () => showItem(current + 1));
+
+      // Click on the dark backdrop closes it
+      lb.addEventListener("click", (e) => { if (e.target === lb) lb.close(); });
+
+      document.addEventListener("keydown", (e) => {
+        if (!lb.open) return;
+        if (e.key === "ArrowLeft") showItem(current - 1);
+        if (e.key === "ArrowRight") showItem(current + 1);
+      });
+
+      // ======================================
+      // GALLERY
+      // ======================================
       function showMessage(text) {
         gallery.replaceChildren();
-
         const message = document.createElement("p");
         message.className = "gallery-message";
         message.textContent = text;
-
         gallery.appendChild(message);
       }
 
       function setHero(photo) {
         heroImg.src = photo.image_url;
         heroImg.alt = photo.caption || "Featured photograph";
-
         if (photo.location && photo.location.trim()) {
           heroLocation.textContent = photo.location;
         }
@@ -487,21 +632,39 @@
         heroImg.alt = "Dramatic mountain landscape";
       }
 
+      // Resolves to "w / h" once the image has loaded, or null if it fails or is slow
+      function measure(photo) {
+        return new Promise((resolve) => {
+          const probe = new Image();
+          const timer = setTimeout(() => resolve(null), 8000);
+          probe.onload = () => {
+            clearTimeout(timer);
+            resolve(probe.naturalWidth && probe.naturalHeight
+              ? `${probe.naturalWidth} / ${probe.naturalHeight}` : null);
+          };
+          probe.onerror = () => { clearTimeout(timer); resolve(null); };
+          probe.src = photo.image_url;
+        });
+      }
+
       function makePhoto(photo, index) {
         const figure = document.createElement("figure");
-        figure.className = "photo";
+        figure.className = "photo reveal";
+        figure.style.setProperty("--d", `${(index % 2) * 0.12}s`);
 
         const img = document.createElement("img");
         img.alt = photo.caption || "Photograph from the gallery";
         img.loading = "lazy";
         img.decoding = "async";
 
-        // Once the image loads, drop the placeholder ratio so the
-        // photo displays at its true, original proportions.
+        // Exact ratio is known up front, so nothing shifts when the image arrives
+        if (photo._ratio) {
+          img.style.aspectRatio = photo._ratio;
+          img.classList.add("is-loaded");
+        }
+
         img.addEventListener("load", () => {
           if (img.naturalWidth && img.naturalHeight) {
-            // Keep the exact ratio reserved, then let the browser
-            // use the intrinsic size going forward.
             img.style.aspectRatio = `${img.naturalWidth} / ${img.naturalHeight}`;
           }
           img.classList.add("is-loaded");
@@ -512,7 +675,8 @@
           img.style.opacity = "0.35";
         }, { once: true });
 
-        // Set src AFTER listeners are attached so cached images still fire "load"
+        img.addEventListener("click", () => openLightbox(index));
+
         img.src = photo.image_url;
 
         const figcaption = document.createElement("figcaption");
@@ -543,9 +707,7 @@
 
       async function loadGallery() {
         if (!window.supabase) {
-          showMessage(
-            "Supabase could not load. Check your connection and reload."
-          );
+          showMessage("Supabase could not load. Check your connection and reload.");
           setHeroFallback();
           return;
         }
@@ -556,17 +718,12 @@
           !SUPABASE_KEY ||
           SUPABASE_KEY.includes("YOUR_")
         ) {
-          showMessage(
-            "Supabase setup required: add your project URL and public key to index.html."
-          );
+          showMessage("Supabase setup required: add your project URL and public key to index.html.");
           setHeroFallback();
           return;
         }
 
-        const db = window.supabase.createClient(
-          SUPABASE_URL,
-          SUPABASE_KEY
-        );
+        const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         try {
           const { data, error } = await db
@@ -582,7 +739,6 @@
             /^https:\/\//i.test(photo.image_url)
           );
 
-          // Pull the hero photo out, and keep it out of the gallery
           const hero = valid.find(photo => String(photo.id) === String(HERO_ID));
           const photos = valid.filter(photo => String(photo.id) !== String(HERO_ID));
 
@@ -592,27 +748,27 @@
           gallery.replaceChildren();
 
           if (photos.length === 0) {
-            showMessage(
-              "No photographs yet. Check back when the next adventure is published."
-            );
+            showMessage("No photographs yet. Check back when the next adventure is published.");
             return;
           }
 
+          // Measure every image first so the columns are laid out once, correctly
+          const ratios = await Promise.all(photos.map(measure));
+          photos.forEach((photo, i) => { photo._ratio = ratios[i]; });
+
+          items = photos;
+
           const fragment = document.createDocumentFragment();
-
-          photos.forEach((photo, index) => {
-            fragment.appendChild(makePhoto(photo, index));
-          });
-
+          photos.forEach((photo, index) => fragment.appendChild(makePhoto(photo, index)));
           gallery.appendChild(fragment);
+
+          // Start watching the new photos so each one reveals on scroll
+          gallery.querySelectorAll(".photo").forEach(watch);
 
         } catch (error) {
           console.error("Supabase gallery error:", error);
           setHeroFallback();
-
-          showMessage(
-            "The gallery could not be loaded. Check your Supabase table permissions and configuration."
-          );
+          showMessage("The gallery could not be loaded. Check your Supabase table permissions and configuration.");
         }
       }
 
