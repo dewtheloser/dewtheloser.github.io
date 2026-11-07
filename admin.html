@@ -112,6 +112,26 @@
       padding: 10px 5px;
     }
 
+    select {
+      display: block; width: 100%; padding: 13px; margin: 10px 0;
+      border-radius: 5px; font: inherit;
+      background: var(--panel); color: var(--text); border: 1px solid var(--border);
+    }
+    select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    details { margin: 10px 0; }
+    summary { cursor: pointer; color: var(--accent); padding: 6px 0; }
+
+    .photo-row {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 16px 0;
+    }
+    .photo-row img { max-height: 180px; margin: 0 0 8px; }
+    .btns { display: flex; gap: 8px; }
+    .btns button { margin: 10px 0 0; }
+    .danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); }
+
     .secondary {
       background: transparent;
       color: var(--accent);
@@ -215,18 +235,28 @@
         id="file"
         type="file"
         accept="image/webp,image/jpeg,image/png"
+        multiple
         required
       >
 
       <img id="preview" alt="Selected image preview" hidden>
+
+      <label for="album">Album (optional)</label>
+      <select id="album"><option value="">No album</option></select>
+
+      <details>
+        <summary>＋ Create a new album</summary>
+        <input id="newAlbum" type="text" maxlength="80" placeholder="Album title">
+        <input id="newAlbumDesc" type="text" maxlength="200" placeholder="Short description (optional)">
+        <button id="createAlbum" class="secondary" type="button">Create album</button>
+      </details>
 
       <label for="caption">Photo caption</label>
       <input
         id="caption"
         type="text"
         maxlength="150"
-        placeholder="Photo caption"
-        required
+        placeholder="Photo caption (optional when uploading several)"
       >
 
       <label for="location">Location (optional)</label>
@@ -241,6 +271,13 @@
         Publish to gallery
       </button>
     </form>
+
+    <h2>Manage photos</h2>
+
+    <label for="filterAlbum">Show</label>
+    <select id="filterAlbum"><option value="">All photos</option></select>
+
+    <div id="photoList"></div>
 
     <button id="logoutButton" class="secondary" type="button">
       Log out
@@ -282,6 +319,13 @@
   const fileInput = $("#file");
   const preview = $("#preview");
   const status = $("#status");
+  const albumSelect = $("#album");
+  const newAlbum = $("#newAlbum");
+  const newAlbumDesc = $("#newAlbumDesc");
+  const createAlbumBtn = $("#createAlbum");
+  const filterAlbum = $("#filterAlbum");
+  const photoList = $("#photoList");
+  let albumList = [];
 
   let busy = false;
   let previewUrl = null;
@@ -300,6 +344,7 @@
   function showManager() {
     loginSection.hidden = true;
     manager.hidden = false;
+    loadAlbums();
   }
 
   // ==========================================
@@ -343,6 +388,244 @@
   const db = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
+  );
+
+  // ==========================================
+  // ALBUMS
+  // ==========================================
+
+  async function loadAlbums(selectId) {
+    const keep = selectId ?? albumSelect.value;
+
+    const { data, error } = await db
+      .from("albums")
+      .select("id, title")
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      message(
+        "Could not load albums: " + error.message +
+        " (have you run albums-setup.sql in Supabase?)",
+        "error"
+      );
+      return;
+    }
+
+    albumList = data || [];
+    const keepFilter = filterAlbum.value;
+
+    albumSelect.replaceChildren(new Option("No album", ""));
+    filterAlbum.replaceChildren(
+      new Option("All photos", ""),
+      new Option("Not in an album", "none")
+    );
+
+    albumList.forEach((a) => {
+      albumSelect.add(new Option(a.title, a.id));
+      filterAlbum.add(new Option(a.title, a.id));
+    });
+
+    albumSelect.value = String(keep ?? "");
+    filterAlbum.value = keepFilter;
+
+    loadPhotos();
+  }
+
+  // ==========================================
+  // MANAGE PHOTOS (edit, move, delete)
+  // ==========================================
+
+  async function loadPhotos() {
+    const f = filterAlbum.value;
+
+    let query = db
+      .from("photos")
+      .select("id, image_url, caption, location, album_id")
+      .order("id", { ascending: false });
+
+    if (f === "none") query = query.is("album_id", null);
+    else if (f) query = query.eq("album_id", Number(f));
+
+    const { data, error } = await query;
+
+    if (error) {
+      message("Could not load photos: " + error.message, "error");
+      return;
+    }
+
+    photoList.replaceChildren();
+
+    if (!data.length) {
+      const empty = document.createElement("p");
+      empty.textContent = "No photos here yet.";
+      photoList.appendChild(empty);
+      return;
+    }
+
+    data.forEach((p) => photoList.appendChild(photoRow(p)));
+  }
+
+  function textField(value, placeholder) {
+    const input = document.createElement("input");
+    input.type = "text";
+    input.maxLength = 150;
+    input.value = value || "";
+    input.placeholder = placeholder;
+    return input;
+  }
+
+  function photoRow(p) {
+    const row = document.createElement("div");
+    row.className = "photo-row";
+
+    const img = document.createElement("img");
+    img.src = p.image_url;
+    img.alt = p.caption || "Photo";
+    img.loading = "lazy";
+
+    const cap = textField(p.caption, "Caption");
+    const loc = textField(p.location, "Location");
+
+    const sel = document.createElement("select");
+    sel.add(new Option("No album", ""));
+    albumList.forEach((a) => sel.add(new Option(a.title, a.id)));
+    sel.value = p.album_id == null ? "" : String(p.album_id);
+
+    const btns = document.createElement("div");
+    btns.className = "btns";
+
+    const save = document.createElement("button");
+    save.type = "button";
+    save.textContent = "Save";
+
+    const del = document.createElement("button");
+    del.type = "button";
+    del.textContent = "Delete";
+    del.className = "danger";
+
+    btns.append(save, del);
+    row.append(img, cap, loc, sel, btns);
+
+    save.addEventListener("click", async () => {
+      save.disabled = true;
+
+      const { data, error } = await db
+        .from("photos")
+        .update({
+          caption: cap.value.trim(),
+          location: loc.value.trim(),
+          album_id: sel.value ? Number(sel.value) : null
+        })
+        .eq("id", p.id)
+        .select("id");
+
+      if (error || !data || !data.length) {
+        message(
+          "Save failed: " + (error ? error.message : "no permission. Run photos-manage.sql in Supabase."),
+          "error"
+        );
+      } else {
+        message("Saved.", "success");
+      }
+
+      save.disabled = false;
+    });
+
+    del.addEventListener("click", async () => {
+      if (!confirm("Delete this photo permanently? This cannot be undone.")) return;
+
+      del.disabled = true;
+
+      const { data, error } = await db
+        .from("photos")
+        .delete()
+        .eq("id", p.id)
+        .select("id");
+
+      if (error || !data || !data.length) {
+        message(
+          "Delete failed: " + (error ? error.message : "no permission. Run photos-manage.sql in Supabase."),
+          "error"
+        );
+        del.disabled = false;
+        return;
+      }
+
+      // Also remove the file so it stops using your storage space
+      const marker = "/object/public/" + BUCKET + "/";
+      const at = p.image_url.indexOf(marker);
+      let fileGone = false;
+
+      if (at !== -1) {
+        const filePath = decodeURIComponent(p.image_url.slice(at + marker.length));
+        const { data: removed, error: fileError } = await db.storage
+          .from(BUCKET)
+          .remove([filePath]);
+        fileGone = !fileError && removed && removed.length > 0;
+      }
+
+      row.remove();
+
+      message(
+        fileGone
+          ? "Photo deleted."
+          : "Photo removed from the gallery, but its file could not be deleted from storage (check the storage delete policy in photos-manage.sql).",
+        fileGone ? "success" : "error"
+      );
+    });
+
+    return row;
+  }
+
+  filterAlbum.addEventListener("change", loadPhotos);
+
+  async function createAlbum() {
+    const title = newAlbum.value.trim();
+
+    if (!title) {
+      message("Enter an album title.", "error");
+      return;
+    }
+
+    createAlbumBtn.disabled = true;
+
+    try {
+      const user = await getAuthorizedUser();
+      if (!user) throw new Error("Please log in again.");
+
+      const { data, error } = await db
+        .from("albums")
+        .insert({ title, description: newAlbumDesc.value.trim() })
+        .select("id")
+        .single();
+
+      if (error) throw error;
+
+      newAlbum.value = "";
+      newAlbumDesc.value = "";
+      await loadAlbums(data.id);
+
+      message(`Album "${title}" created and selected.`, "success");
+    } catch (error) {
+      message(
+        "Could not create album: " + (error.message || "Unknown error"),
+        "error"
+      );
+    } finally {
+      createAlbumBtn.disabled = false;
+    }
+  }
+
+  createAlbumBtn.addEventListener("click", createAlbum);
+
+  // Enter in these boxes creates the album instead of submitting the photo form
+  [newAlbum, newAlbumDesc].forEach((input) =>
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        createAlbum();
+      }
+    })
   );
 
   // ==========================================
@@ -499,146 +782,96 @@
 
     if (busy) return;
 
-    const file = fileInput.files[0];
+    const files = [...fileInput.files];
 
-    if (!file) {
+    if (!files.length) {
       message("Please select an image.", "error");
       return;
     }
 
-    const allowedTypes = [
-      "image/webp",
-      "image/jpeg",
-      "image/png"
-    ];
+    const extensions = { "image/webp": "webp", "image/jpeg": "jpg", "image/png": "png" };
 
-    if (!allowedTypes.includes(file.type)) {
-      message(
-        "Unsupported file type. Choose a WebP, JPEG, or PNG image.",
-        "error"
-      );
-      return;
-    }
-
-    if (file.size > MAX_FILE_SIZE) {
-      message(
-        "Image is too large. Choose a file smaller than 5 MB.",
-        "error"
-      );
-      return;
+    for (const f of files) {
+      if (!extensions[f.type]) {
+        message(`"${f.name}" is not a WebP, JPEG, or PNG image.`, "error");
+        return;
+      }
+      if (f.size > MAX_FILE_SIZE) {
+        message(`"${f.name}" is larger than 5 MB.`, "error");
+        return;
+      }
     }
 
     const caption = $("#caption").value.trim();
     const location = $("#location").value.trim();
 
-    if (!caption) {
+    if (!caption && files.length === 1) {
       message("Please enter a photo caption.", "error");
       return;
     }
 
+    const albumId = albumSelect.value ? Number(albumSelect.value) : null;
+
     busy = true;
     publishButton.disabled = true;
 
-    let uploadedPath = null;
+    let done = 0;
 
     try {
-      message("Verifying administrator access...", "info");
-
       const user = await getAuthorizedUser();
 
       if (!user) {
         await db.auth.signOut();
         showLogin();
-
-        throw new Error(
-          "Your administrator session is invalid. Please log in again."
-        );
+        throw new Error("Your administrator session is invalid. Please log in again.");
       }
 
-      const extensions = {
-        "image/webp": "webp",
-        "image/jpeg": "jpg",
-        "image/png": "png"
-      };
+      for (const file of files) {
+        message(`Uploading ${done + 1} of ${files.length}...`, "info");
 
-      const extension = extensions[file.type];
+        // The user UUID folder matches the Storage policy.
+        const path = `${user.id}/${crypto.randomUUID()}.${extensions[file.type]}`;
 
-      // The user UUID folder matches the Storage policy.
-      const path =
-        `${user.id}/${crypto.randomUUID()}.${extension}`;
+        const { error: uploadError } = await db.storage
+          .from(BUCKET)
+          .upload(path, file, { contentType: file.type, cacheControl: "3600", upsert: false });
 
-      message("Uploading image...", "info");
+        if (uploadError) throw uploadError;
 
-      const { error: uploadError } = await db.storage
-        .from(BUCKET)
-        .upload(path, file, {
-          contentType: file.type,
-          cacheControl: "3600",
-          upsert: false
-        });
+        const { data: urlData } = db.storage.from(BUCKET).getPublicUrl(path);
 
-      if (uploadError) {
-        throw uploadError;
+        const { error: insertError } = await db
+          .from("photos")
+          .insert({ image_url: urlData.publicUrl, caption, location, album_id: albumId });
+
+        if (insertError) {
+          await db.storage.from(BUCKET).remove([path]); // don't leave an orphan file
+          throw insertError;
+        }
+
+        done++;
       }
 
-      uploadedPath = path;
-
-      const { data: urlData } = db.storage
-        .from(BUCKET)
-        .getPublicUrl(path);
-
-      if (!urlData || !urlData.publicUrl) {
-        throw new Error("Could not create the public image URL.");
-      }
-
-      message("Saving photo details...", "info");
-
-      const { error: insertError } = await db
-        .from("photos")
-        .insert({
-          image_url: urlData.publicUrl,
-          caption,
-          location
-        });
-
-      if (insertError) {
-        throw insertError;
-      }
-
-      // The database record and image upload both succeeded.
-      uploadedPath = null;
-
+      // Keep the chosen album selected so you can upload another batch
+      const keepAlbum = albumSelect.value;
       uploadForm.reset();
+      albumSelect.value = keepAlbum;
 
       if (previewUrl) {
         URL.revokeObjectURL(previewUrl);
         previewUrl = null;
       }
-
       preview.removeAttribute("src");
       preview.hidden = true;
 
-      message("Photo published successfully!", "success");
+      message(`${done} photo${done === 1 ? "" : "s"} published!`, "success");
+      loadPhotos();
     } catch (error) {
-      // Clean up the file if the database insert failed.
-      if (uploadedPath) {
-        try {
-          const { error: cleanupError } = await db.storage
-            .from(BUCKET)
-            .remove([uploadedPath]);
-
-          if (cleanupError) {
-            console.error("File cleanup failed:", cleanupError);
-          }
-        } catch (cleanupError) {
-          console.error("File cleanup failed:", cleanupError);
-        }
-      }
-
       message(
-        "Upload failed: " + (error.message || "Unknown error"),
+        `Upload stopped after ${done} of ${files.length}: ` + (error.message || "Unknown error"),
         "error"
       );
+      if (done) loadPhotos();
     } finally {
       busy = false;
       publishButton.disabled = false;
